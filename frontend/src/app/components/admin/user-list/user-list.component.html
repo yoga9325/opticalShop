@@ -1,0 +1,64 @@
+<div class="page-container">
+  <h2>User Management</h2>
+  
+  <div *ngIf="loading" class="loading">
+    <p>Loading users...</p>
+  </div>
+  
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && users.length > 0">
+    <p-table [value]="users" [paginator]="true" [rows]="pagination.perPage" [tableStyle]="{ 'min-width': '50rem' }"
+             [rowsPerPageOptions]="[5, 10, 20, 50]" [totalRecords]="pagination.totalRecords"
+             [globalFilterFields]="['username', 'email', 'roles']" responsiveLayout="scroll">
+      <ng-template pTemplate="caption">
+        <div class="flex align-items-center justify-content-between">
+          <h3 style="margin-top: 0">Users List</h3>
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input pInputText type="text" (input)="dt.filterGlobal($event, 'contains')" placeholder="Search users..." />
+          </span>
+        </div>
+      </ng-template>
+      
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="username">Username <p-sortIcon field="username"></p-sortIcon></th>
+          <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+          <th>Roles</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-user>
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <p-tag *ngFor="let role of user.roles" 
+                    [value]="role" 
+                    [severity]="isAdmin(user) ? 'danger' : 'info'"></p-tag>
+          </td>
+          <td>
+            <button pButton type="button" pRipple 
+                    [icon]="isAdmin(user) ? 'pi pi-ban' : 'pi pi-check'" 
+                    [class]="isAdmin(user) ? 'p-button-warning' : 'p-button-success'" 
+                    class="p-button-sm p-button-rounded mr-2" 
+                    (click)="toggleAdmin(user)" 
+                    [title]="isAdmin(user) ? 'Remove Admin' : 'Make Admin'"></button>
+            <button pButton type="button" pRipple icon="pi pi-trash" class="p-button-sm p-button-rounded p-button-danger" 
+                    (click)="deleteUser(user.id)" title="Delete User"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div *ngIf="!loading && users.length === 0" class="no-data">
+    <p>No users found.</p>
+  </div>
+</div>

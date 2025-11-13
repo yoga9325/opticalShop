@@ -1,0 +1,14 @@
+<div *ngIf="product" class="product-detail">
+  <div class="media">
+    <img [src]="product.imageUrl || 'assets/images/frame-1.svg'" alt="{{product.name}}"/>
+  </div>
+  <div class="meta">
+    <h2>{{product.name}}</h2>
+    <p>{{product.description}}</p>
+    <p class="price">₹{{product.price}}</p>
+    <div class="buy">
+      <input type="number" [(ngModel)]="qty" min="1" />
+      <button class="btn btn-primary" (click)="addToCart()">Add to cart</button>
+    </div>
+  </div>
+</div>

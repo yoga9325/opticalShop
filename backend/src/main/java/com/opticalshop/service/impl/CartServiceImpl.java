@@ -1,0 +1,97 @@
+package com.opticalshop.service.impl;
+
+import com.opticalshop.dto.CartDto;
+import com.opticalshop.dto.CartItemDto;
+import com.opticalshop.model.Cart;
+import com.opticalshop.model.CartItem;
+import com.opticalshop.model.Product;
+import com.opticalshop.model.User;
+import com.opticalshop.repository.CartRepository;
+import com.opticalshop.repository.ProductRepository;
+import com.opticalshop.repository.UserRepository;
+import com.opticalshop.service.CartService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+public class CartServiceImpl implements CartService {
+
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Override
+    public CartDto getCartForUser(Long userId) {
+        Cart cart = getOrCreateCart(userId);
+        return toDto(cart);
+    }
+
+    @Override
+    public CartDto addProductToCart(Long userId, Long productId, int quantity) {
+        Cart cart = getOrCreateCart(userId);
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        Optional<CartItem> existingItem = cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst();
+
+        if (existingItem.isPresent()) {
+            CartItem item = existingItem.get();
+            item.setQuantity(item.getQuantity() + quantity);
+        } else {
+            CartItem newItem = new CartItem();
+            newItem.setCart(cart);
+            newItem.setProduct(product);
+            newItem.setQuantity(quantity);
+            cart.getItems().add(newItem);
+        }
+
+        cartRepository.save(cart);
+        return toDto(cart);
+    }
+
+    @Override
+    public CartDto removeProductFromCart(Long userId, Long productId) {
+        Cart cart = getOrCreateCart(userId);
+        cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
+        cartRepository.save(cart);
+        return toDto(cart);
+    }
+
+    private Cart getOrCreateCart(Long userId) {
+        return cartRepository.findByUserId(userId).orElseGet(() -> {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            Cart newCart = new Cart();
+            newCart.setUser(user);
+            return cartRepository.save(newCart);
+        });
+    }
+
+    private CartDto toDto(Cart cart) {
+        CartDto dto = new CartDto();
+        dto.setId(cart.getId());
+        dto.setUserId(cart.getUser().getId());
+        dto.setItems(cart.getItems().stream().map(this::toDto).collect(Collectors.toSet()));
+        return dto;
+    }
+
+    private CartItemDto toDto(CartItem cartItem) {
+        CartItemDto dto = new CartItemDto();
+        dto.setId(cartItem.getId());
+        dto.setProductId(cartItem.getProduct().getId());
+        dto.setProductName(cartItem.getProduct().getName());
+        dto.setQuantity(cartItem.getQuantity());
+        dto.setPrice(cartItem.getProduct().getPrice().doubleValue());
+        return dto;
+    }
+}

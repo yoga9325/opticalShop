@@ -1,0 +1,14 @@
+<div class="product-list">
+  <div class="search-row">
+    <input type="text" [(ngModel)]="q" placeholder="Search frames, brands, sunglasses..." />
+    <button (click)="load()">Search</button>
+  </div>
+  <div class="cards">
+    <div *ngFor="let p of products" class="card">
+      <img [src]="p.imageUrl || 'assets/images/frame-1.svg'" alt="{{p.name}}" />
+      <h4>{{p.name}}</h4>
+      <p class="price">₹{{p.price}}</p>
+      <a routerLink="/product/{{p.id}}" class="btn btn-sm btn-primary">View</a>
+    </div>
+  </div>
+</div>

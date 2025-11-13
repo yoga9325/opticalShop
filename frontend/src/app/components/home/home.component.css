@@ -1,0 +1,342 @@
+.home-hero {
+    background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%);
+    padding: 3rem;
+    border-radius: 10px
+}
+
+/* Dark theme for home hero - use :host-context so styles apply when an ancestor (e.g. body)
+   has the .dark-theme class (works with Angular's view encapsulation) */
+:host-context(.dark-theme) .home-hero {
+    background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+:host-context(.dark-theme) .hero-copy h1 {
+    color: #fff;
+}
+
+:host-context(.dark-theme) .hero-copy p {
+    color: #b0b0b0;
+}
+
+:host-context(.dark-theme) .glasses-wrap {
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+}
+
+:host-context(.dark-theme) .badge {
+    background: #2a2a2a;
+    color: #e0e0e0;
+}
+
+:host-context(.dark-theme) .slide-caption {
+    background: rgba(42, 42, 42, 0.85);
+    color: #e0e0e0;
+}
+
+:host-context(.dark-theme) .slide-caption .text-muted {
+    color: #b0b0b0 !important;
+}
+
+.hero-inner {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    justify-content: space-between;
+    max-width: 1100px;
+    margin: 0 auto
+}
+
+.hero-copy {
+    flex: 1
+}
+
+.hero-copy h1 {
+    font-size: 2.2rem;
+    margin: 0 0 0.5rem;
+    color: #0b3b78
+}
+
+.hero-copy p {
+    color: #444;
+    margin-bottom: 1rem
+}
+
+.hero-ctas {
+    display: flex;
+    gap: 0.75rem
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.6rem 1.1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600
+}
+
+.btn.primary {
+    background: #0d6efd;
+    color: #fff
+}
+
+.btn.ghost {
+    background: transparent;
+    color: #0d6efd;
+    border: 1px solid rgba(13, 110, 253, 0.15)
+}
+
+.btn.secondary {
+    background: #fff;
+    color: #0d6efd;
+    border: 2px solid #0d6efd;
+    transition: all 0.2s ease
+}
+
+.btn.secondary:hover {
+    background: #f8f9ff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.1)
+}
+
+.hero-visual {
+    flex: 0 0 360px;
+    position: relative
+}
+
+.glasses-wrap {
+    width: 320px;
+    height: 240px;
+    background: linear-gradient(135deg, #e6f0ff, #ffffff);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(13, 110, 253, 0.06);
+    overflow: hidden
+}
+
+.glasses {
+    width: 220px;
+    animation: float 4s ease-in-out infinite
+}
+
+.badge {
+    position: absolute;
+    left: 0;
+    bottom: -12px;
+    background: #fff;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06)
+}
+
+/* carousel styles */
+.carousel-wrap {
+    width: 360px
+}
+
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+    border-radius: 12px
+}
+
+.carousel .slide {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.98);
+    transition: all .6s ease
+}
+
+.carousel .slide.active {
+    opacity: 1;
+    transform: scale(1)
+}
+
+.carousel .slide img {
+    width: 80%;
+    height: 160px;
+    object-fit: contain
+}
+
+.slide-caption {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px
+}
+
+.features {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto
+}
+
+.feature {
+    flex: 1;
+    padding: 1.25rem;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    text-align: center;
+    transition: transform 240ms ease, box-shadow 240ms ease
+}
+
+.dark-theme .feature {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: #e0e0e0
+}
+
+.dark-theme .feature p {
+    color: #b0b0b0
+}
+
+.feature:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08)
+}
+
+.feature .icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 0.5rem
+}
+
+.feature h3 {
+    margin: 0.25rem 0 0.5rem
+}
+
+.feature p {
+    color: #666;
+    margin: 0
+}
+
+.showcase {
+    max-width: 1100px;
+    margin: 2.25rem auto;
+    padding: 0 1rem
+}
+
+.showcase h2 {
+    margin: 0 0 1rem;
+    color: #0b3b78
+}
+
+.dark-theme .showcase h2 {
+    color: #fff
+}
+
+.cards {
+    display: flex;
+    gap: 18px;
+    margin-top: 24px;
+    flex-wrap: wrap
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 16px;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    transition: transform 0.35s cubic-bezier(.2, .8, .2, 1), box-shadow 0.35s
+}
+
+.dark-theme .card {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: #e0e0e0
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12)
+}
+
+.card img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain
+}
+
+.card-body {
+    margin-top: 10px;
+    padding: 0
+}
+
+.card h4 {
+    margin: 0 0 0.3rem
+}
+
+.card p {
+    margin: 0;
+    color: #0d6efd;
+    font-weight: 700
+}
+
+/* product card micro styles */
+.product-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.8rem 0.8rem
+}
+
+.price {
+    color: var(--primary);
+    font-weight: 700
+}
+
+.stars {
+    color: #f59e0b
+}
+
+.card .btn {
+    margin-top: 0.6rem
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0)
+    }
+
+    50% {
+        transform: translateY(-10px)
+    }
+
+    100% {
+        transform: translateY(0)
+    }
+}
+
+@media (max-width:900px) {
+    .hero-inner {
+        flex-direction: column;
+        align-items: center
+    }
+
+    .hero-visual {
+        flex: 0 0 auto
+    }
+
+    .cards {
+        flex-direction: column
+    }
+}

@@ -1,0 +1,12 @@
+<div class="page-container">
+  <h2>My Profile</h2>
+  <p *ngIf="loading">Loading...</p>
+  <p *ngIf="error" class="text-error">{{ error }}</p>
+
+  <div *ngIf="user">
+  
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Role:</strong> {{ user.role }}</p>
+  </div>
+</div>

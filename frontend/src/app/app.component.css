@@ -1,0 +1,128 @@
+.app-header {
+    background: #fff;
+    color: #222;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 6px 18px rgba(12, 50, 120, 0.03)
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 1rem
+}
+
+.brand {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 1.05rem
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+    padding: 0
+}
+
+.nav-links a {
+    color: #222;
+    text-decoration: none
+}
+
+.app-main {
+    max-width: var(--container-width);
+    margin: 1.5rem auto;
+    padding: 0 1rem
+}
+
+.search-wrap {
+    background: #f5f8ff;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    min-width: 420px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem
+}
+
+.search-wrap input {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    padding-left: 0
+}
+
+.search-wrap i {
+    color: var(--muted)
+}
+
+.cart-count {
+    top: -10px;
+    right: -12px;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.45rem
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    min-width: 10rem;
+    padding: 0.5rem 0;
+    margin: 0.125rem 0 0;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 0.25rem 1.5rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    color: #16181b;
+    text-decoration: none;
+    background-color: #f8f9fa;
+}
+
+.nav-link {
+    cursor: pointer;
+}
+
+@media (max-width:768px) {
+    .search-wrap {
+        min-width: 200px
+    }
+
+    .brand {
+        font-size: 0.95rem
+    }
+}

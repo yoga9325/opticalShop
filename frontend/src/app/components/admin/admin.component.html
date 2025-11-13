@@ -1,0 +1,93 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h2>Admin Dashboard</h2>
+    <div class="admin-nav">
+      <button class="nav-btn" [class.active]="activeTab === 'products'" (click)="activeTab = 'products'">
+        <i class="bi bi-box"></i> Products
+      </button>
+      <button class="nav-btn" [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">
+        <i class="bi bi-people"></i> Users
+      </button>
+    </div>
+  </div>
+
+  <!-- Products Tab -->
+  <div *ngIf="activeTab === 'products'" class="tab-content">
+    <!-- Create Product Form -->
+    <div class="form-container">
+      <h3>Create New Product</h3>
+      <form (ngSubmit)="createProduct()">
+        <input type="text" [(ngModel)]="newProduct.name" name="name" placeholder="Name" required>
+        <textarea [(ngModel)]="newProduct.description" name="description" placeholder="Description"></textarea>
+        <input type="text" [(ngModel)]="newProduct.brand" name="brand" placeholder="Brand">
+        <input type="text" [(ngModel)]="newProduct.category" name="category" placeholder="Category">
+        <input type="number" [(ngModel)]="newProduct.price" name="price" placeholder="Price">
+        <input type="number" [(ngModel)]="newProduct.stockQuantity" name="stockQuantity" placeholder="Stock Quantity" required>
+        <input type="text" [(ngModel)]="newProduct.imageUrl" name="imageUrl" placeholder="Image URL">
+        <button type="submit">Create Product</button>
+      </form>
+    </div>
+
+    <!-- Product List using PrimeNG DataTable -->
+    <div class="product-list">
+      <h3>Product List</h3>
+      <p-table [value]="products" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
+               [rowsPerPageOptions]="[5, 10, 20]" responsiveLayout="scroll" [globalFilterFields]="['name', 'brand', 'category']">
+        <ng-template pTemplate="caption">
+          <div class="flex align-items-center justify-content-between">
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="dt.filterGlobal($event, 'contains')" placeholder="Search products..." />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+            <th pSortableColumn="brand">Brand <p-sortIcon field="brand"></p-sortIcon></th>
+            <th pSortableColumn="category">Category <p-sortIcon field="category"></p-sortIcon></th>
+            <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.brand }}</td>
+            <td>{{ product.category }}</td>
+            <td>{{ product.price | currency }}</td>
+            <td>
+              <button pButton type="button" pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" 
+                      (click)="selectProduct(product)" title="Edit"></button>
+              <button pButton type="button" pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" 
+                      (click)="deleteProduct(product.id)" title="Delete"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Update Product Form -->
+    <div *ngIf="selectedProduct" class="form-container">
+      <h3>Edit Product</h3>
+      <form (ngSubmit)="updateProduct()">
+        <input type="text" [(ngModel)]="selectedProduct.name" name="name" placeholder="Name" required>
+        <textarea [(ngModel)]="selectedProduct.description" name="description" placeholder="Description"></textarea>
+        <input type="text" [(ngModel)]="selectedProduct.brand" name="brand" placeholder="Brand">
+        <input type="text" [(ngModel)]="selectedProduct.category" name="category" placeholder="Category">
+        <input type="number" [(ngModel)]="selectedProduct.price" name="price" placeholder="Price">
+        <input type="number" [(ngModel)]="selectedProduct.stockQuantity" name="stockQuantity" placeholder="Stock Quantity" required>
+        <input type="text" [(ngModel)]="selectedProduct.imageUrl" name="imageUrl" placeholder="Image URL">
+        <div class="form-actions">
+          <button type="submit">Update Product</button>
+          <button type="button" (click)="selectedProduct = null" class="btn-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Users Tab -->
+  <div *ngIf="activeTab === 'users'" class="tab-content">
+    <app-user-list></app-user-list>
+  </div>
+</div>
