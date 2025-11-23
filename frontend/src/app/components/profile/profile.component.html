@@ -1,12 +1,92 @@
-<div class="page-container">
-  <h2>My Profile</h2>
-  <p *ngIf="loading">Loading...</p>
-  <p *ngIf="error" class="text-error">{{ error }}</p>
+<div class="profile-page">
+  <div class="profile-container">
+    <div class="profile-card" *ngIf="user">
+      <!-- Header Section -->
+      <div class="profile-header">
+        <div class="avatar-container">
+          <div class="avatar">
+            {{ user.username.charAt(0).toUpperCase() }}
+          </div>
+          <div class="status-indicator"></div>
+        </div>
+        <h1 class="profile-name">{{ user.username }}</h1>
+        <p class="profile-subtitle">Member since {{ getCurrentYear() }}</p>
+      </div>
 
-  <div *ngIf="user">
-  
-    <p><strong>Username:</strong> {{ user.username }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Role:</strong> {{ user.role }}</p>
+      <!-- Info Section -->
+      <div class="profile-info">
+        <div class="info-item">
+          <div class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Username</span>
+            <span class="info-value">{{ user.username }}</span>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Email</span>
+            <span class="info-value">{{ user.email }}</span>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Role</span>
+            <div class="role-badges">
+              <span class="role-badge" *ngFor="let role of user.roles">
+                {{ role.replace('ROLE_', '') }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="profile-stats">
+        <div class="stat-item">
+          <div class="stat-value">{{ user.id }}</div>
+          <div class="stat-label">User ID</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-value">Active</div>
+          <div class="stat-label">Status</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Loading profile...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-container" *ngIf="error">
+      <div class="error-icon">⚠️</div>
+      <p class="error-message">{{ error }}</p>
+      <button class="retry-btn" (click)="load()">Retry</button>
+    </div>
   </div>
 </div>

@@ -1,26 +1,38 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { Cart } from '../models/cart';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
-  private apiUrl = `${environment.apiUrl}/cart`;
+  private apiUrl = 'http://localhost:8080/api/cart';
+  private cartSubject = new BehaviorSubject<any>(null);
+  cart$ = this.cartSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getCart(): Observable<Cart> {
-    return this.http.get<Cart>(this.apiUrl);
+  getCart(): Observable<any> {
+    return this.http.get(this.apiUrl).pipe(
+      tap(cart => this.cartSubject.next(cart))
+    );
   }
 
-  addProduct(productId: number, quantity: number): Observable<Cart> {
-    return this.http.post<Cart>(`${this.apiUrl}/add`, {}, { params: { productId, quantity } });
+  addToCart(productId: number, quantity: number): Observable<any> {
+    const params = new HttpParams()
+      .set('productId', productId.toString())
+      .set('quantity', quantity.toString());
+    return this.http.post(`${this.apiUrl}/add`, null, { params }).pipe(
+      tap(cart => this.cartSubject.next(cart))
+    );
   }
 
-  removeProduct(productId: number): Observable<Cart> {
-    return this.http.post<Cart>(`${this.apiUrl}/remove`, {}, { params: { productId } });
+  removeFromCart(productId: number): Observable<any> {
+    const params = new HttpParams()
+      .set('productId', productId.toString());
+    return this.http.post(`${this.apiUrl}/remove`, null, { params }).pipe(
+      tap(cart => this.cartSubject.next(cart))
+    );
   }
 }

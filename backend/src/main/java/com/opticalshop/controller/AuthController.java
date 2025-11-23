@@ -83,4 +83,93 @@ public class AuthController {
         String token = jwtUtil.generateToken(username);
         return ResponseEntity.ok(Map.of("token", token, "role", user_role, "username", usernameApi));
     }
+
+    @Autowired
+    private com.opticalshop.service.EmailService emailService;
+
+    @Autowired
+    private com.opticalshop.service.SmsService smsService;
+
+    @PostMapping("/send-otp")
+    public ResponseEntity<?> sendOtp(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String mobile = body.get("mobile");
+
+        if ((email == null || email.isEmpty()) && (mobile == null || mobile.isEmpty())) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Email or Mobile Number is required"));
+        }
+
+        // Generate 6-digit OTP
+        String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+
+        User user = null;
+        if (email != null && !email.isEmpty()) {
+            user = userRepository.findByEmail(email).orElse(null);
+        } else if (mobile != null && !mobile.isEmpty()) {
+            user = userRepository.findByMobileNumber(mobile).orElse(null);
+        }
+
+        if (user == null) {
+            // Create a new user if not exists (Registration flow)
+            user = new User();
+            if (email != null) {
+                user.setEmail(email);
+                user.setUsername(email);
+            } else {
+                user.setMobileNumber(mobile);
+                user.setUsername(mobile);
+            }
+            user.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString())); // Random password
+            user.setRoles(Set.of("ROLE_USER"));
+            user.setEnabled(true);
+        }
+
+        user.setOtp(otp);
+        user.setOtpExpiry(java.time.LocalDateTime.now().plusMinutes(10)); // 10 mins expiry
+        userRepository.save(user);
+
+        if (email != null && !email.isEmpty()) {
+            emailService.sendEmail(email, "Your OTP Code", "Your OTP code is: " + otp);
+        } else if (mobile != null && !mobile.isEmpty()) {
+            smsService.sendSms(mobile, "Your OTP code is: " + otp);
+        }
+
+        return ResponseEntity.ok(Map.of("message", "OTP sent successfully"));
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String mobile = body.get("mobile");
+        String otp = body.get("otp");
+
+        User user = null;
+        if (email != null && !email.isEmpty()) {
+            user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        } else if (mobile != null && !mobile.isEmpty()) {
+            user = userRepository.findByMobileNumber(mobile)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("error", "Email or Mobile Number is required"));
+        }
+
+        if (user.getOtp() == null || !user.getOtp().equals(otp)) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid OTP"));
+        }
+
+        if (user.getOtpExpiry().isBefore(java.time.LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body(Map.of("error", "OTP expired"));
+        }
+
+        // Clear OTP
+        user.setOtp(null);
+        user.setOtpExpiry(null);
+        userRepository.save(user);
+
+        // Generate Token
+        String token = jwtUtil.generateToken(user.getUsername());
+        String user_role = String.join(",", user.getRoles());
+
+        return ResponseEntity.ok(Map.of("token", token, "role", user_role, "username", user.getUsername()));
+    }
 }

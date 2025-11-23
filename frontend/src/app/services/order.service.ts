@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 export class OrderService {
   private apiUrl = `${environment.apiUrl}/orders`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   createOrder(order: Order): Observable<Order> {
     return this.http.post<Order>(this.apiUrl, order);
@@ -20,11 +20,19 @@ export class OrderService {
     return this.http.get<Order[]>(`${this.apiUrl}/my-orders`);
   }
 
+  getAllOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(this.apiUrl);
+  }
+
+  getOrdersForUser(userId: number): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.apiUrl}/user/${userId}`);
+  }
+
   getOrderDetails(orderId: number): Observable<Order> {
     return this.http.get<Order>(`${this.apiUrl}/${orderId}`);
   }
 
   updateOrderStatus(orderId: number, status: string): Observable<Order> {
-    return this.http.patch<Order>(`${this.apiUrl}/${orderId}/status`, { status });
+    return this.http.put<Order>(`${this.apiUrl}/${orderId}/status`, { status });
   }
 }

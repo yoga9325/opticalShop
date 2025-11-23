@@ -1,0 +1,30 @@
+<div class="product-upload">
+  <h2>Upload Product</h2>
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" [(ngModel)]="product.name" name="name" required>
+    </div>
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <textarea id="description" [(ngModel)]="product.description" name="description" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="brand">Brand:</label>
+      <input type="text" id="brand" [(ngModel)]="product.brand" name="brand" required>
+    </div>
+    <div class="form-group">
+      <label for="category">Category:</label>
+      <input type="text" id="category" [(ngModel)]="product.category" name="category" required>
+    </div>
+    <div class="form-group">
+      <label for="price">Price:</label>
+      <input type="number" id="price" [(ngModel)]="product.price" name="price" required>
+    </div>
+    <div class="form-group">
+      <label for="imageUrl">Image URL:</label>
+      <input type="text" id="imageUrl" [(ngModel)]="product.imageUrl" name="imageUrl" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Product</button>
+  </form>
+</div>

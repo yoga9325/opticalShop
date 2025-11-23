@@ -1,0 +1,154 @@
+<div class="payment-container">
+  <h1>Payment</h1>
+
+  <div class="payment-content">
+    <!-- Payment Form -->
+    <div class="payment-form">
+      <div class="form-section">
+        <h2>Billing Information</h2>
+        <p class="info-text">Name: {{ checkoutData.firstName }} {{ checkoutData.lastName }}</p>
+        <p class="info-text">Email: {{ checkoutData.email }}</p>
+        <p class="info-text">Address: {{ checkoutData.address }}, {{ checkoutData.city }}, {{ checkoutData.state }}</p>
+      </div>
+
+      <form [formGroup]="paymentForm">
+        <div class="form-section">
+          <h2>Card Information</h2>
+
+          <div class="form-group">
+            <label for="cardName">Cardholder Name *</label>
+            <input 
+              type="text" 
+              id="cardName" 
+              formControlName="cardName"
+              class="form-control"
+              placeholder="John Doe"
+            >
+            <small class="error" *ngIf="paymentForm.get('cardName')?.errors?.['required'] && paymentForm.get('cardName')?.touched">
+              Cardholder name is required
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="cardNumber">Card Number *</label>
+            <input 
+              type="text" 
+              id="cardNumber" 
+              formControlName="cardNumber"
+              class="form-control"
+              placeholder="1234 5678 9012 3456"
+              maxlength="16"
+            >
+            <small class="error" *ngIf="paymentForm.get('cardNumber')?.errors?.['required'] && paymentForm.get('cardNumber')?.touched">
+              Card number is required
+            </small>
+            <small class="error" *ngIf="paymentForm.get('cardNumber')?.errors?.['pattern'] && paymentForm.get('cardNumber')?.touched">
+              Card number must be 16 digits
+            </small>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expiryMonth">Expiry Month *</label>
+              <input 
+                type="text" 
+                id="expiryMonth" 
+                formControlName="expiryMonth"
+                class="form-control"
+                placeholder="MM"
+                maxlength="2"
+              >
+              <small class="error" *ngIf="paymentForm.get('expiryMonth')?.errors?.['required'] && paymentForm.get('expiryMonth')?.touched">
+                Month is required
+              </small>
+            </div>
+            <div class="form-group">
+              <label for="expiryYear">Expiry Year *</label>
+              <input 
+                type="text" 
+                id="expiryYear" 
+                formControlName="expiryYear"
+                class="form-control"
+                placeholder="YY"
+                maxlength="2"
+              >
+              <small class="error" *ngIf="paymentForm.get('expiryYear')?.errors?.['required'] && paymentForm.get('expiryYear')?.touched">
+                Year is required
+              </small>
+            </div>
+            <div class="form-group">
+              <label for="cvv">CVV *</label>
+              <input 
+                type="text" 
+                id="cvv" 
+                formControlName="cvv"
+                class="form-control"
+                placeholder="123"
+                maxlength="3"
+              >
+              <small class="error" *ngIf="paymentForm.get('cvv')?.errors?.['required'] && paymentForm.get('cvv')?.touched">
+                CVV is required
+              </small>
+              <small class="error" *ngIf="paymentForm.get('cvv')?.errors?.['pattern'] && paymentForm.get('cvv')?.touched">
+                CVV must be 3 digits
+              </small>
+            </div>
+          </div>
+
+          <div class="security-badge">
+            🔒 Your card information is secure and encrypted
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="goBack()" [disabled]="isProcessing">
+            Back
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-primary" 
+            (click)="processPayment()"
+            [disabled]="!paymentForm.valid || isProcessing"
+          >
+            <span *ngIf="!isProcessing">Pay ₹{{ cartTotal | number:'1.0-0' }}</span>
+            <span *ngIf="isProcessing">Processing...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-summary">
+      <h2>Order Summary</h2>
+      
+      <div class="summary-section">
+        <h3>Delivery Address</h3>
+        <p>{{ checkoutData.firstName }} {{ checkoutData.lastName }}</p>
+        <p>{{ checkoutData.address }}</p>
+        <p>{{ checkoutData.city }}, {{ checkoutData.state }} {{ checkoutData.zipCode }}</p>
+        <p>📞 {{ checkoutData.phone }}</p>
+      </div>
+
+      <div class="summary-section">
+        <h3>Payment Method</h3>
+        <p>{{ checkoutData.paymentMethod }}</p>
+      </div>
+
+      <div class="summary-totals">
+        <div class="total-row">
+          <span>Amount:</span>
+          <span>₹{{ cartTotal | number:'1.0-0' }}</span>
+        </div>
+        <div class="total-row final">
+          <span>Total Payable:</span>
+          <span>₹{{ cartTotal | number:'1.0-0' }}</span>
+        </div>
+      </div>
+
+      <div class="payment-info">
+        <p class="info-title">Payment Details</p>
+        <p class="info-text">Your payment will be processed securely. You will receive an order confirmation email shortly.</p>
+      </div>
+    </div>
+  </div>
+</div>

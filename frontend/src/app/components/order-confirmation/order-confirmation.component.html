@@ -1,0 +1,93 @@
+<div class="confirmation-wrapper">
+    <div class="confirmation-container">
+        <!-- Loading State -->
+        <div class="loading-state" *ngIf="isLoading">
+            <div class="spinner"></div>
+            <p>Loading order details...</p>
+        </div>
+
+        <!-- Success Content -->
+        <div *ngIf="!isLoading && orderDetails">
+            <div class="success-animation">
+                <div class="checkmark-circle">
+                    <div class="checkmark"></div>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="success-title">Order Placed Successfully! 🎉</h1>
+        <p class="success-subtitle">Thank you for your purchase. Your order has been confirmed.</p>
+
+        <div class="order-details-card" *ngIf="orderDetails">
+            <h2>Order Details</h2>
+
+            <div class="detail-row">
+                <span class="label">Order ID:</span>
+                <span class="value">#{{ orderDetails.id }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Order Date:</span>
+                <span class="value">{{ orderDetails.orderDate | date:'medium' }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Total Amount:</span>
+                <span class="value amount">₹{{ orderDetails.totalAmount | number:'1.0-0' }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Payment Method:</span>
+                <span class="value">{{ orderDetails.paymentMethod }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label">Status:</span>
+                <span class="value status">{{ orderDetails.status }}</span>
+            </div>
+
+            <div class="detail-row full-width">
+                <span class="label">Delivery Address:</span>
+                <span class="value">{{ orderDetails.shippingAddress }}</span>
+            </div>
+        </div>
+
+        <div class="info-message">
+            <i class="bi bi-info-circle"></i>
+            <p>You will receive an email confirmation shortly with your order details and tracking information.</p>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-primary" (click)="viewOrderHistory()">
+                <i class="bi bi-clock-history"></i> View Order History
+            </button>
+            <button class="btn btn-secondary" (click)="trackOrder()">
+                <i class="bi bi-geo-alt"></i> Track Order
+            </button>
+            <button class="btn btn-outline" (click)="continueShopping()">
+                <i class="bi bi-bag"></i> Continue Shopping
+            </button>
+        </div>
+
+        <div class="next-steps">
+            <h3>What's Next?</h3>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <i class="bi bi-envelope-check"></i>
+                    <h4>Email Confirmation</h4>
+                    <p>Check your email for order confirmation and invoice</p>
+                </div>
+                <div class="step-card">
+                    <i class="bi bi-box-seam"></i>
+                    <h4>Order Processing</h4>
+                    <p>We'll prepare your order for shipment</p>
+                </div>
+                <div class="step-card">
+                    <i class="bi bi-truck"></i>
+                    <h4>Delivery</h4>
+                    <p>Your order will be delivered within 5-7 business days</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

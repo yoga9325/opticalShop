@@ -1,0 +1,173 @@
+<div class="payment-wrapper">
+    <div class="payment-container">
+        <div class="payment-header">
+            <button class="back-btn" (click)="goBack()">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
+            <h1 class="payment-title">Complete Your Payment</h1>
+            <div class="security-badge">
+                <i class="bi bi-shield-lock-fill"></i>
+                <span>Secure Payment</span>
+            </div>
+        </div>
+
+        <div class="payment-grid">
+            <!-- Left: Payment Methods -->
+            <div class="payment-methods-section">
+                <h2 class="section-title">Select Payment Method</h2>
+
+                <div class="payment-options">
+                    <!-- Credit/Debit Card -->
+                    <div class="payment-option" [class.active]="selectedPaymentMethod === 'credit-card'"
+                        (click)="selectPaymentMethod('credit-card')">
+                        <div class="option-header">
+                            <i class="bi bi-credit-card"></i>
+                            <span>Credit / Debit Card</span>
+                        </div>
+                    </div>
+
+                    <!-- UPI -->
+                    <div class="payment-option" [class.active]="selectedPaymentMethod === 'upi'"
+                        (click)="selectPaymentMethod('upi')">
+                        <div class="option-header">
+                            <i class="bi bi-phone"></i>
+                            <span>UPI</span>
+                        </div>
+                    </div>
+
+                    <!-- Net Banking -->
+                    <div class="payment-option" [class.active]="selectedPaymentMethod === 'netbanking'"
+                        (click)="selectPaymentMethod('netbanking')">
+                        <div class="option-header">
+                            <i class="bi bi-bank"></i>
+                            <span>Net Banking</span>
+                        </div>
+                    </div>
+
+                    <!-- Cash on Delivery -->
+                    <div class="payment-option" [class.active]="selectedPaymentMethod === 'cod'"
+                        (click)="selectPaymentMethod('cod')">
+                        <div class="option-header">
+                            <i class="bi bi-cash"></i>
+                            <span>Cash on Delivery</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Forms -->
+                <div class="payment-form-container">
+                    <!-- Credit Card Form -->
+                    <div class="payment-form" *ngIf="selectedPaymentMethod === 'credit-card'">
+                        <h3>Enter Card Details</h3>
+                        <div class="form-group">
+                            <label>Card Number</label>
+                            <input type="text" [(ngModel)]="cardNumber" (input)="formatCardNumber($event)"
+                                placeholder="1234 5678 9012 3456" maxlength="19" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Cardholder Name</label>
+                            <input type="text" [(ngModel)]="cardName" placeholder="JOHN DOE" class="form-input">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Expiry Date</label>
+                                <div class="expiry-inputs">
+                                    <input type="text" [(ngModel)]="expiryMonth" placeholder="MM" maxlength="2"
+                                        class="form-input">
+                                    <span>/</span>
+                                    <input type="text" [(ngModel)]="expiryYear" placeholder="YY" maxlength="2"
+                                        class="form-input">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="password" [(ngModel)]="cvv" placeholder="123" maxlength="3"
+                                    class="form-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UPI Form -->
+                    <div class="payment-form" *ngIf="selectedPaymentMethod === 'upi'">
+                        <h3>Enter UPI ID</h3>
+                        <div class="form-group">
+                            <label>UPI ID</label>
+                            <input type="text" [(ngModel)]="upiId" placeholder="yourname@upi" class="form-input">
+                        </div>
+                        <div class="upi-apps">
+                            <p>Or pay using</p>
+                            <div class="upi-icons">
+                                <div class="upi-icon">GPay</div>
+                                <div class="upi-icon">PhonePe</div>
+                                <div class="upi-icon">Paytm</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Net Banking Form -->
+                    <div class="payment-form" *ngIf="selectedPaymentMethod === 'netbanking'">
+                        <h3>Select Your Bank</h3>
+                        <div class="bank-list">
+                            <label class="bank-option" *ngFor="let bank of banks">
+                                <input type="radio" name="bank" [value]="bank" [(ngModel)]="selectedBank">
+                                <span>{{ bank }}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Cash on Delivery -->
+                    <div class="payment-form" *ngIf="selectedPaymentMethod === 'cod'">
+                        <div class="cod-info">
+                            <i class="bi bi-info-circle"></i>
+                            <div>
+                                <h3>Cash on Delivery</h3>
+                                <p>Pay with cash when your order is delivered to your doorstep.</p>
+                                <p class="cod-note">Note: Additional charges may apply.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="pay-btn" (click)="processPayment()" [disabled]="isProcessing">
+                    <span *ngIf="!isProcessing">
+                        <i class="bi bi-lock-fill"></i> Pay Securely
+                    </span>
+                    <span *ngIf="isProcessing">
+                        <i class="bi bi-arrow-repeat spin"></i> Processing...
+                    </span>
+                </button>
+            </div>
+
+            <!-- Right: Order Summary -->
+            <div class="order-summary-sidebar">
+                <div class="summary-card">
+                    <h3>Order Summary</h3>
+                    <div class="summary-details">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>₹{{ orderSummary?.subtotal || 0 | number:'1.0-0' }}</span>
+                        </div>
+                        <div class="summary-row" *ngIf="orderSummary?.discount > 0">
+                            <span>Discount</span>
+                            <span class="discount">-₹{{ orderSummary?.discount || 0 | number:'1.0-0' }}</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total Amount</span>
+                            <span class="total-amount">₹{{ orderSummary?.total || 0 | number:'1.0-0' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="delivery-info">
+                        <h4>Delivery Address</h4>
+                        <p *ngIf="checkoutData">
+                            {{ checkoutData.firstName }} {{ checkoutData.lastName }}<br>
+                            {{ checkoutData.address }}<br>
+                            {{ checkoutData.city }}, {{ checkoutData.state }} {{ checkoutData.zipCode }}<br>
+                            {{ checkoutData.phone }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
