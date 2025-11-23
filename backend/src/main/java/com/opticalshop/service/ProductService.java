@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface ProductService {
     Page<Product> listAll(String q, Pageable pageable);
+    Page<Product> listWithFilters(String q, String gender, String frameType, String frameShape, String color, Pageable pageable);
     Optional<Product> findById(Long id);
     Product create(Product p);
     Product update(Long id, Product p);

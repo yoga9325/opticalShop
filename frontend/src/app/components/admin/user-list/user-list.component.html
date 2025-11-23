@@ -1,18 +1,18 @@
 <div class="page-container">
   <h2>User Management</h2>
-  
+
   <div *ngIf="loading" class="loading">
     <p>Loading users...</p>
   </div>
-  
+
   <div *ngIf="error" class="error-message">
     {{ error }}
   </div>
 
   <div *ngIf="!loading && users.length > 0">
     <p-table [value]="users" [paginator]="true" [rows]="pagination.perPage" [tableStyle]="{ 'min-width': '50rem' }"
-             [rowsPerPageOptions]="[5, 10, 20, 50]" [totalRecords]="pagination.totalRecords"
-             [globalFilterFields]="['username', 'email', 'roles']" responsiveLayout="scroll">
+      [rowsPerPageOptions]="[5, 10, 20, 50]" [totalRecords]="pagination.totalRecords"
+      [globalFilterFields]="['username', 'email', 'roles']" responsiveLayout="scroll">
       <ng-template pTemplate="caption">
         <div class="flex align-items-center justify-content-between">
           <h3 style="margin-top: 0">Users List</h3>
@@ -22,7 +22,7 @@
           </span>
         </div>
       </ng-template>
-      
+
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
@@ -32,26 +32,27 @@
           <th>Actions</th>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="body" let-user>
         <tr>
           <td>{{ user.id }}</td>
           <td>{{ user.username }}</td>
           <td>{{ user.email }}</td>
           <td>
-            <p-tag *ngFor="let role of user.roles" 
-                    [value]="role" 
-                    [severity]="isAdmin(user) ? 'danger' : 'info'"></p-tag>
+            <p-tag *ngFor="let role of user.roles" [value]="role"
+              [severity]="isAdmin(user) ? 'danger' : 'info'"></p-tag>
           </td>
           <td>
-            <button pButton type="button" pRipple 
-                    [icon]="isAdmin(user) ? 'pi pi-ban' : 'pi pi-check'" 
-                    [class]="isAdmin(user) ? 'p-button-warning' : 'p-button-success'" 
-                    class="p-button-sm p-button-rounded mr-2" 
-                    (click)="toggleAdmin(user)" 
-                    [title]="isAdmin(user) ? 'Remove Admin' : 'Make Admin'"></button>
-            <button pButton type="button" pRipple icon="pi pi-trash" class="p-button-sm p-button-rounded p-button-danger" 
-                    (click)="deleteUser(user.id)" title="Delete User"></button>
+            <button pButton type="button" pRipple icon="pi pi-eye"
+              class="p-button-sm p-button-rounded p-button-info mr-2" (click)="viewUser(user)"
+              title="View Details"></button>
+            <button pButton type="button" pRipple [icon]="isAdmin(user) ? 'pi pi-ban' : 'pi pi-check'"
+              [class]="isAdmin(user) ? 'p-button-warning' : 'p-button-success'"
+              class="p-button-sm p-button-rounded mr-2" (click)="toggleAdmin(user)"
+              [title]="isAdmin(user) ? 'Remove Admin' : 'Make Admin'"></button>
+            <button pButton type="button" pRipple icon="pi pi-trash"
+              class="p-button-sm p-button-rounded p-button-danger" (click)="deleteUser(user.id)"
+              title="Delete User"></button>
           </td>
         </tr>
       </ng-template>
@@ -60,5 +61,45 @@
 
   <div *ngIf="!loading && users.length === 0" class="no-data">
     <p>No users found.</p>
+  </div>
+
+  <!-- User Details Modal -->
+  <div class="modal-overlay" *ngIf="showUserModal" (click)="closeUserView()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>User Details: {{selectedUser?.username}}</h3>
+        <button class="close-btn" (click)="closeUserView()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-section">
+          <h4>Basic Info</h4>
+          <p><strong>ID:</strong> {{selectedUser?.id}}</p>
+          <p><strong>Email:</strong> {{selectedUser?.email}}</p>
+          <p><strong>Roles:</strong> {{selectedUser?.roles?.join(', ')}}</p>
+        </div>
+
+        <div class="detail-section">
+          <h4>Order History ({{userOrders.length}})</h4>
+          <div class="orders-list" *ngIf="userOrders.length > 0; else noOrders">
+            <div class="order-item" *ngFor="let order of userOrders">
+              <div class="order-header">
+                <span class="order-id">#{{order.id}}</span>
+                <span class="order-date">{{order.orderDate | date:'short'}}</span>
+                <span class="order-status" [class]="'status-' + order.status.toLowerCase()">{{order.status}}</span>
+              </div>
+              <div class="order-total">
+                <strong>Total:</strong> ₹{{order.totalAmount}}
+              </div>
+            </div>
+          </div>
+          <ng-template #noOrders>
+            <p class="no-orders">No orders found for this user.</p>
+          </ng-template>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeUserView()">Close</button>
+      </div>
+    </div>
   </div>
 </div>

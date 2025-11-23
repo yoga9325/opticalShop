@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService, UserDto } from '../../../services/admin.service';
 import { AuthService } from '../../../services/auth.service';
+import { OrderService } from '../../../services/order.service';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -32,7 +33,11 @@ export class UserListComponent implements OnInit {
     totalRecords: 0
   };
 
-  constructor(private admin: AdminService, public auth: AuthService) { }
+  constructor(
+    private admin: AdminService,
+    public auth: AuthService,
+    private orderService: OrderService
+  ) { }
 
   ngOnInit(): void {
     this.load();
@@ -69,10 +74,10 @@ export class UserListComponent implements OnInit {
 
   deleteUser(id: number) {
     if (!confirm('Delete this user?')) return;
-    this.admin.deleteUser(id).subscribe({ 
+    this.admin.deleteUser(id).subscribe({
       next: () => {
         this.load();
-      }, 
+      },
       error: (err) => {
         alert('Delete failed: ' + (err.message || 'Unknown error'));
       }
@@ -82,13 +87,13 @@ export class UserListComponent implements OnInit {
   toggleAdmin(u: UserDto) {
     const isAdmin = u.roles.includes('ROLE_ADMIN');
     const newRole = isAdmin ? 'ROLE_USER' : 'ROLE_ADMIN';
-    this.admin.updateRole(u.id, newRole).subscribe({ 
+    this.admin.updateRole(u.id, newRole).subscribe({
       next: (updated: UserDto) => {
         const index = this.users.findIndex(user => user.id === updated.id);
         if (index !== -1) {
           this.users[index] = updated;
         }
-      }, 
+      },
       error: (err) => {
         alert('Update role failed: ' + (err.message || 'Unknown error'));
       }
@@ -97,5 +102,30 @@ export class UserListComponent implements OnInit {
 
   isAdmin(user: UserDto): boolean {
     return user.roles.some(role => role.includes('ADMIN'));
+  }
+
+  selectedUser: UserDto | null = null;
+  userOrders: any[] = [];
+  showUserModal = false;
+
+
+  viewUser(user: UserDto) {
+    this.selectedUser = user;
+    this.showUserModal = true;
+    this.orderService.getOrdersForUser(user.id).subscribe({
+      next: (orders) => {
+        this.userOrders = orders;
+      },
+      error: (err) => {
+        console.error('Failed to load user orders', err);
+        this.userOrders = [];
+      }
+    });
+  }
+
+  closeUserView() {
+    this.showUserModal = false;
+    this.selectedUser = null;
+    this.userOrders = [];
   }
 }

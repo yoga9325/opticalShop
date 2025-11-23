@@ -25,6 +25,28 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Page<Product> listWithFilters(String q, String gender, String frameType, String frameShape, String color, Pageable pageable) {
+        // If no filters are provided, use the regular search
+        if ((gender == null || gender.isBlank()) &&
+            (frameType == null || frameType.isBlank()) &&
+            (frameShape == null || frameShape.isBlank()) &&
+            (color == null || color.isBlank())) {
+            return listAll(q, pageable);
+        }
+
+        // Use filter query
+        Page<Product> filteredProducts = productRepository.findByFilters(gender, frameType, frameShape, color, pageable);
+
+        // If search query is provided, we need to filter further (since the filter query doesn't include search)
+        if (q != null && !q.isBlank()) {
+            // For now, return filtered products. In a more complex scenario, you might need to combine search and filters
+            return filteredProducts;
+        }
+
+        return filteredProducts;
+    }
+
+    @Override
     public Optional<Product> findById(Long id) {
         return productRepository.findById(id);
     }

@@ -1,61 +1,69 @@
-<div class="register-container">
-  <div class="register-card">
-    <h2>Register</h2>
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          formControlName="username"
-          class="form-control"
-          [ngClass]="{ 'is-invalid': submitted && f['username'].errors }"
-        />
-        <div *ngIf="submitted && f['username'].errors" class="invalid-feedback">
-          <div *ngIf="f['username'].errors['required']">Username is required</div>
-        </div>
-      </div>
+<div class="register-page">
+  <div class="register-container">
+    <!-- Left Side: Form -->
+    <div class="register-form-section">
+      <div class="form-wrapper">
+        <h2>Create Account</h2>
+        <p class="subtitle">Join us for a better eyewear experience</p>
 
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          formControlName="email"
-          class="form-control"
-          [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"
-        />
-        <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
-          <div *ngIf="f['email'].errors['required']">Email is required</div>
-          <div *ngIf="f['email'].errors['email']">Email must be valid</div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          formControlName="password"
-          class="form-control"
-          [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
-        />
-        <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
-          <div *ngIf="f['password'].errors['required']">Password is required</div>
-          <div *ngIf="f['password'].errors['minlength']">
-            Password must be at least 6 characters
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <div class="input-wrapper">
+              <i class="bi bi-person icon"></i>
+              <input type="text" id="username" formControlName="username"
+                [ngClass]="{ 'is-invalid': submitted && f['username'].errors }" placeholder="Choose a username" />
+            </div>
+            <div *ngIf="submitted && f['username'].errors" class="error-text">
+              <span *ngIf="f['username'].errors['required']">Username is required</span>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div *ngIf="error" class="alert alert-danger">
-        {{ error }}
-      </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-wrapper">
+              <i class="bi bi-envelope icon"></i>
+              <input type="email" id="email" formControlName="email"
+                [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" placeholder="Enter your email" />
+            </div>
+            <div *ngIf="submitted && f['email'].errors" class="error-text">
+              <span *ngIf="f['email'].errors['required']">Email is required</span>
+              <span *ngIf="f['email'].errors['email']">Email must be valid</span>
+            </div>
+          </div>
 
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Register</button>
-        <a routerLink="/login" class="btn btn-link">Already have an account?</a>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <i class="bi bi-lock icon"></i>
+              <input type="password" id="password" formControlName="password"
+                [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" placeholder="Create a password" />
+            </div>
+            <div *ngIf="submitted && f['password'].errors" class="error-text">
+              <span *ngIf="f['password'].errors['required']">Password is required</span>
+              <span *ngIf="f['password'].errors['minlength']">At least 6 characters</span>
+            </div>
+          </div>
+
+          <div *ngIf="error" class="error-message">
+            {{ error }}
+          </div>
+
+          <button type="submit" class="btn-register">Create Account</button>
+
+          <div class="form-footer">
+            <p>Already have an account? <a routerLink="/login">Log in</a></p>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
+
+    <!-- Right Side: Image -->
+    <div class="register-image-section">
+      <div class="brand-overlay">
+        <h1>Join the Family</h1>
+        <p>Discover exclusive deals and new collections first.</p>
+      </div>
+    </div>
   </div>
 </div>

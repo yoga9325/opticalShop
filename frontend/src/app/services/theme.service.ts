@@ -5,36 +5,40 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class ThemeService {
-  private darkMode = new BehaviorSubject<boolean>(false);
-  darkMode$ = this.darkMode.asObservable();
+  private darkModeSubject = new BehaviorSubject<boolean>(false);
+  public darkMode$ = this.darkModeSubject.asObservable();
 
   constructor() {
-    // Check local storage for saved theme preference
+    // Check localStorage for saved theme preference
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      this.darkMode.next(savedTheme === 'dark');
+    if (savedTheme === 'dark') {
+      this.enableDarkMode();
     } else {
-      // Check system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      this.darkMode.next(prefersDark);
+      this.disableDarkMode();
     }
-
-    // Apply theme on initialization
-    this.applyTheme(this.darkMode.value);
   }
 
   toggleTheme() {
-    const newValue = !this.darkMode.value;
-    this.darkMode.next(newValue);
-    this.applyTheme(newValue);
-    localStorage.setItem('theme', newValue ? 'dark' : 'light');
+    if (this.darkModeSubject.value) {
+      this.disableDarkMode();
+    } else {
+      this.enableDarkMode();
+    }
   }
 
-  private applyTheme(isDark: boolean) {
-    if (isDark) {
-      document.body.classList.add('dark-theme');
-    } else {
-      document.body.classList.remove('dark-theme');
-    }
+  enableDarkMode() {
+    document.body.classList.add('dark-mode');
+    this.darkModeSubject.next(true);
+    localStorage.setItem('theme', 'dark');
+  }
+
+  disableDarkMode() {
+    document.body.classList.remove('dark-mode');
+    this.darkModeSubject.next(false);
+    localStorage.setItem('theme', 'light');
+  }
+
+  isDarkMode(): boolean {
+    return this.darkModeSubject.value;
   }
 }

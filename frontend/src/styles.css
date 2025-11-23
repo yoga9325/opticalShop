@@ -29,9 +29,9 @@ body {
 
 /* App container */
 .app-container {
-  max-width: var(--container-width);
+  /* max-width: var(--container-width);
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1rem; */
 }
 
 /* Utility classes */

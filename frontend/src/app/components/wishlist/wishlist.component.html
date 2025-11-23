@@ -1,17 +1,19 @@
 <div class="wishlist-container">
   <h2>Your Wishlist</h2>
-  <div *ngIf="wishlist && wishlist.products.length > 0; else emptyWishlist">
-    <div *ngFor="let product of wishlist.products" class="wishlist-item">
-      <img [src]="product.imageUrl" [alt]="product.name">
-      <div class="item-details">
-        <h4>{{ product.name }}</h4>
-        <p>{{ product.price | currency }}</p>
-        <button (click)="removeProduct(product.id)">Remove</button>
-        <a [routerLink]="['/product', product.id]" class="btn btn-primary">View Product</a>
+  <ng-container *ngIf="wishlist$ | async as wishlistDto">
+    <div *ngIf="wishlistDto?.products?.length > 0; else emptyWishlist">
+      <div *ngFor="let product of wishlistDto.products" class="wishlist-item">
+        <img [src]="product.imageUrl" [alt]="product.name">
+        <div class="item-details">
+          <h4>{{ product.name }}</h4>
+          <p>{{ product.price | currency:'INR' }}</p>
+          <button (click)="removeProduct(product.id)">Remove</button>
+          <a [routerLink]="['/product', product.id]" class="btn btn-primary">View Product</a>
+        </div>
       </div>
     </div>
-  </div>
-  <ng-template #emptyWishlist>
-    <p>Your wishlist is empty.</p>
-  </ng-template>
+    <ng-template #emptyWishlist>
+      <p>Your wishlist is empty.</p>
+    </ng-template>
+  </ng-container>
 </div>

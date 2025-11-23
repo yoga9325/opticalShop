@@ -3,6 +3,7 @@ import { WishlistService } from '../../services/wishlist.service';
 import { Wishlist } from '../../models/wishlist';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-wishlist',
@@ -12,23 +13,17 @@ import { RouterModule } from '@angular/router';
   imports: [CommonModule, RouterModule]
 })
 export class WishlistComponent implements OnInit {
-  wishlist: Wishlist | null = null;
+  wishlist$: Observable<any>;
 
-  constructor(private wishlistService: WishlistService) { }
+  constructor(private wishlistService: WishlistService) {
+    this.wishlist$ = this.wishlistService.getWishlist();
+  }
 
   ngOnInit(): void {
-    this.loadWishlist();
+    // Wishlist loads automatically from observable
   }
 
-  loadWishlist(): void {
-    this.wishlistService.getWishlist().subscribe(wishlist => {
-      this.wishlist = wishlist;
-    });
-  }
-
-  removeProduct(productId: number): void {
-    this.wishlistService.removeProduct(productId).subscribe(() => {
-      this.loadWishlist();
-    });
+  removeProduct(productId: number | string): void {
+    this.wishlistService.removeFromWishlist(Number(productId)).subscribe();
   }
 }

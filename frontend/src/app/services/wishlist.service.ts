@@ -1,26 +1,37 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { Wishlist } from '../models/wishlist';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WishlistService {
-  private apiUrl = `${environment.apiUrl}/wishlist`;
+  private apiUrl = 'http://localhost:8080/api/wishlist';
+  private wishlistSubject = new BehaviorSubject<any>(null);
+  wishlist$ = this.wishlistSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getWishlist(): Observable<Wishlist> {
-    return this.http.get<Wishlist>(this.apiUrl);
+  getWishlist(): Observable<any> {
+    return this.http.get(this.apiUrl).pipe(
+      tap(wishlist => this.wishlistSubject.next(wishlist))
+    );
   }
 
-  addProduct(productId: number): Observable<Wishlist> {
-    return this.http.post<Wishlist>(`${this.apiUrl}/add`, {}, { params: { productId } });
+  addToWishlist(productId: number): Observable<any> {
+    const params = new HttpParams()
+      .set('productId', productId.toString());
+    return this.http.post(`${this.apiUrl}/add`, null, { params }).pipe(
+      tap(wishlist => this.wishlistSubject.next(wishlist))
+    );
   }
 
-  removeProduct(productId: number): Observable<Wishlist> {
-    return this.http.post<Wishlist>(`${this.apiUrl}/remove`, {}, { params: { productId } });
+  removeFromWishlist(productId: number): Observable<any> {
+    const params = new HttpParams()
+      .set('productId', productId.toString());
+    return this.http.post(`${this.apiUrl}/remove`, null, { params }).pipe(
+      tap(wishlist => this.wishlistSubject.next(wishlist))
+    );
   }
 }

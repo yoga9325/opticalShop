@@ -1,17 +1,80 @@
-<div class="page-container">
-  <h2>Contact Us</h2>
-  <p>If you have questions, please reach out using the form below or email us at <strong>support@opticalshop.example</strong>.</p>
+<div class="contact-page">
+  <!-- Hero Section -->
+  <section class="contact-hero">
+    <div class="container">
+      <h1>Get in Touch</h1>
+      <p>We'd love to hear from you. Here's how you can reach us.</p>
+    </div>
+  </section>
 
-  <form class="contact-form">
-    <label for="name">Name</label>
-    <input id="name" type="text" />
+  <div class="container contact-content">
+    <div class="contact-grid">
+      <!-- Contact Info Column -->
+      <div class="contact-info">
+        <div class="info-card">
+          <h3>Contact Information</h3>
+          <p class="info-desc">Fill up the form and our Team will get back to you within 24 hours.</p>
 
-    <label for="email">Email</label>
-    <input id="email" type="email" />
+          <div class="info-item">
+            <span class="icon">📞</span>
+            <div>
+              <h4>Phone</h4>
+              <p>+91 98765 43210</p>
+            </div>
+          </div>
 
-    <label for="message">Message</label>
-    <textarea id="message" rows="6"></textarea>
+          <div class="info-item">
+            <span class="icon">✉️</span>
+            <div>
+              <h4>Email</h4>
+              <p>support@opticalshop.com</p>
+            </div>
+          </div>
 
-    <button class="btn primary" type="button">Send Message</button>
-  </form>
+          <div class="info-item">
+            <span class="icon">📍</span>
+            <div>
+              <h4>Address</h4>
+              <p>123, Fashion Street, Tech Park,<br>Bangalore, India - 560001</p>
+            </div>
+          </div>
+
+          <div class="social-links">
+            <a href="#" class="social-icon">FB</a>
+            <a href="#" class="social-icon">TW</a>
+            <a href="#" class="social-icon">IG</a>
+            <a href="#" class="social-icon">LI</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form Column -->
+      <div class="contact-form-wrapper">
+        <form class="contact-form">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+            <input id="name" type="text" placeholder="John Doe" [(ngModel)]="name" name="name" />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input id="email" type="email" placeholder="john@example.com" [(ngModel)]="email" name="email" />
+          </div>
+
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <input id="subject" type="text" placeholder="How can we help?" [(ngModel)]="subject" name="subject" />
+          </div>
+
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" rows="5" placeholder="Write your message here..." [(ngModel)]="message"
+              name="message"></textarea>
+          </div>
+
+          <button class="btn-submit" type="button" (click)="onSubmit()">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>

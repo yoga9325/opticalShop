@@ -16,6 +16,8 @@ public class WebConfig {
         
         // Allow all origins for development
         config.addAllowedOrigin("http://localhost:4200"); // Angular default port
+        config.addAllowedOrigin("http://localhost:3000"); // In case of different port
+        config.addAllowedOrigin("http://127.0.0.1:4200"); // Alternative localhost
         
         // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
         config.addAllowedMethod("*");

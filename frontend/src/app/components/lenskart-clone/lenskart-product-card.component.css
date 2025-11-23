@@ -1,0 +1,224 @@
+/* Grid Layout */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+}
+
+/* Card Container */
+.product-card {
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Offer Badge */
+.offer-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 4px 0;
+    z-index: 10;
+}
+
+/* Wishlist Button */
+.wishlist-btn {
+    position: absolute;
+    top: 35px;
+    right: 10px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.wishlist-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: #9ca3af;
+    fill: none;
+}
+
+.wishlist-btn:hover svg {
+    stroke: #ef4444;
+    fill: #ef4444;
+}
+
+/* Image Area */
+.image-container {
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9fafb;
+    padding: 1rem;
+    transition: background-color 0.3s;
+}
+
+.product-card:hover .image-container {
+    background-color: #fff;
+}
+
+.product-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.08);
+}
+
+/* Content Area */
+.card-content {
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Rating */
+.rating-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.rating-pill {
+    background: #f3f4f6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.star-icon {
+    width: 12px;
+    height: 12px;
+    color: #3b82f6;
+}
+
+.rating-count {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+/* Typography */
+.product-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-details {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0 0 12px 0;
+    text-transform: capitalize;
+}
+
+/* Price */
+.price-container {
+    margin-top: auto;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.current-price {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.original-price {
+    font-size: 0.9rem;
+    color: #9ca3af;
+    text-decoration: line-through;
+}
+
+.tax-info {
+    font-size: 0.75rem;
+    color: #0d9488;
+    background: #ccfbf1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* Hover Action */
+.hover-action {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+    border-top: 1px solid #f3f4f6;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .hover-action {
+    transform: translateY(0);
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    background: #0d9488;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 4px 6px rgba(13, 148, 136, 0.2);
+}
+
+.add-to-cart-btn:hover {
+    background: #0f766e;
+}
+
+.add-to-cart-btn:active {
+    transform: scale(0.98);
+}

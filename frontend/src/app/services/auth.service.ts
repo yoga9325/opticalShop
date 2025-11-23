@@ -12,7 +12,10 @@ export class AuthService {
   private authStateSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
   authStateChange = this.authStateSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  private showLoginModalSubject = new BehaviorSubject<boolean>(false);
+  showLoginModal$ = this.showLoginModalSubject.asObservable();
+
+  constructor(private http: HttpClient) { }
 
   login(username: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { username, password }).pipe(
@@ -29,6 +32,23 @@ export class AuthService {
 
   register(username: string, email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, { username, email, password });
+  }
+
+  sendOtp(email?: string, mobile?: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/send-otp`, { email, mobile });
+  }
+
+  verifyOtp(email?: string, mobile?: string, otp?: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/verify-otp`, { email, mobile, otp }).pipe(
+      tap((res: any) => {
+        if (res && res.token) {
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('user_role', res.role);
+          localStorage.setItem('username', res.username);
+          this.authStateSubject.next(true);
+        }
+      })
+    );
   }
 
   logout(): void {
@@ -65,5 +85,8 @@ export class AuthService {
     } catch (e) {
       return null;
     }
+  }
+  triggerLoginModal() {
+    this.showLoginModalSubject.next(true);
   }
 }

@@ -1,0 +1,16 @@
+.product-item-content {
+  border: 1px solid var(--surface-d);
+  border-radius: 3px;
+  margin: .3rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.product-item-content img {
+  width: 100%;
+  height: 400px;
+  /* Fixed height for banner images */
+  object-fit: cover;
+  /* Ensure image covers the area without distortion */
+  border-radius: 10px;
+}

@@ -1,0 +1,128 @@
+<p-dialog [(visible)]="visible" [modal]="true" [draggable]="false" [resizable]="false" [style]="{width: '400px'}"
+    styleClass="auth-dialog" [showHeader]="false">
+
+    <div class="auth-container">
+        <!-- Close Button -->
+        <button class="close-btn" (click)="visible = false">
+            <i class="pi pi-times"></i>
+        </button>
+
+        <!-- Top Image Section -->
+        <div class="auth-header">
+            <div class="header-content">
+                <h2>{{ isLoginMode ? 'Welcome Back!' : 'Join Us' }}</h2>
+                <p>{{ isLoginMode ? 'Sign in to your account' : 'Create your account today' }}</p>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="auth-body">
+            <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+
+                <!-- Username (Only for Password Login or Register) -->
+                <div class="form-group" *ngIf="!isOtpLogin">
+                    <span class="p-input-icon-left w-100">
+                        <i class="pi pi-user"></i>
+                        <input pInputText formControlName="username" placeholder="Username"
+                            [class.ng-invalid]="submitted && f['username'].errors" class="w-100" />
+                    </span>
+                    <small *ngIf="submitted && f['username'].errors" class="p-error">
+                        Username is required
+                    </small>
+                </div>
+
+                <!-- OTP Method Selection -->
+                <div class="form-group mb-3" *ngIf="isOtpLogin && !otpSent">
+                    <div class="d-flex justify-content-center gap-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="loginMethod" id="methodEmail"
+                                [checked]="loginMethod === 'email'" (change)="setLoginMethod('email')">
+                            <label class="form-check-label" for="methodEmail">Email</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="loginMethod" id="methodMobile"
+                                [checked]="loginMethod === 'mobile'" (change)="setLoginMethod('mobile')">
+                            <label class="form-check-label" for="methodMobile">Mobile</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email (For Register or OTP Login via Email) -->
+                <div class="form-group" *ngIf="(!isLoginMode) || (isOtpLogin && loginMethod === 'email')">
+                    <span class="p-input-icon-left w-100">
+                        <i class="pi pi-envelope"></i>
+                        <input pInputText formControlName="email" placeholder="Email"
+                            [class.ng-invalid]="submitted && f['email'].errors" class="w-100"
+                            [attr.disabled]="otpSent ? '' : null" />
+                    </span>
+                    <small *ngIf="submitted && f['email'].errors" class="p-error">
+                        Valid email is required
+                    </small>
+                </div>
+
+                <!-- Mobile (For OTP Login via Mobile) -->
+                <div class="form-group" *ngIf="isOtpLogin && loginMethod === 'mobile'">
+                    <span class="p-input-icon-left w-100">
+                        <i class="pi pi-phone"></i>
+                        <input pInputText formControlName="mobile" placeholder="Mobile Number (10 digits)"
+                            [class.ng-invalid]="submitted && f['mobile'].errors" class="w-100"
+                            [attr.disabled]="otpSent ? '' : null" />
+                    </span>
+                    <small *ngIf="submitted && f['mobile'].errors" class="p-error">
+                        Valid 10-digit mobile number is required
+                    </small>
+                </div>
+
+                <!-- Password (Only for Password Login or Register) -->
+                <div class="form-group" *ngIf="!isOtpLogin">
+                    <span class="p-input-icon-left w-100">
+                        <i class="pi pi-lock"></i>
+                        <input pInputText type="password" formControlName="password" placeholder="Password"
+                            [class.ng-invalid]="submitted && f['password'].errors" class="w-100" />
+                    </span>
+                    <small *ngIf="submitted && f['password'].errors" class="p-error">
+                        Password is required (min 6 chars)
+                    </small>
+                </div>
+
+                <!-- OTP Input -->
+                <div class="form-group" *ngIf="isOtpLogin && otpSent">
+                    <span class="p-input-icon-left w-100">
+                        <i class="pi pi-key"></i>
+                        <input pInputText formControlName="otp" placeholder="Enter 6-digit OTP"
+                            [class.ng-invalid]="submitted && f['otp'].errors" class="w-100" />
+                    </span>
+                    <small *ngIf="submitted && f['otp'].errors" class="p-error">
+                        OTP is required
+                    </small>
+                </div>
+
+                <div *ngIf="error" class="error-message">
+                    {{ error }}
+                </div>
+
+                <button pButton type="submit"
+                    [label]="isLoginMode ? (isOtpLogin ? (otpSent ? 'Verify OTP' : 'Send OTP') : 'Sign In') : 'Register'"
+                    class="w-100 p-button-rounded p-button-primary mb-3">
+                </button>
+
+                <!-- Toggle OTP Login -->
+                <div class="text-center mb-2" *ngIf="isLoginMode">
+                    <a (click)="toggleOtpLogin()" class="text-secondary cursor-pointer"
+                        style="font-size: 0.9rem; text-decoration: underline;">
+                        {{ isOtpLogin ? 'Login with Password' : 'Login with OTP' }}
+                    </a>
+                </div>
+
+                <div class="text-center switch-mode">
+                    <p class="mb-0">
+                        {{ isLoginMode ? "Don't have an account?" : "Already have an account?" }}
+                        <a (click)="toggleMode()" class="text-primary fw-bold cursor-pointer">
+                            {{ isLoginMode ? 'Sign up' : 'Log in' }}
+                        </a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</p-dialog>

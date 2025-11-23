@@ -1,0 +1,123 @@
+<div class="product-list-container">
+  <!-- Banner -->
+  <div class="banner">
+    <img src="https://static1.lenskart.com/media/desktop/img/Mar23/spring/home/PLP%20Camapaign%20-%20WEB_1.jpg" 
+         alt="Products Banner" class="banner-img">
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Sidebar Filters -->
+    <div class="filters-sidebar" [class.hidden]="false">
+      <h3 class="filter-title">Filters</h3>
+
+      <!-- Gender Filter -->
+      <div class="filter-group">
+        <h4>Gender</h4>
+        <div class="filter-options">
+          <label *ngFor="let gender of genderOptions">
+            <input type="checkbox"
+                   [checked]="selectedGenders.includes(gender.title)"
+                   (change)="onGenderChange(gender.title, $event.target.checked)">
+            {{ gender.title }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Product Type Filter -->
+      <div class="filter-group">
+        <h4>Product Type</h4>
+        <div class="filter-options">
+          <label *ngFor="let type of productTypes">
+            <input type="checkbox"
+                   [checked]="selectedTypes.includes(type.title)"
+                   (change)="onTypeChange(type.title, $event.target.checked)">
+            {{ type.name }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Frame Type Filter -->
+      <div class="filter-group">
+        <h4>Frame Type</h4>
+        <div class="filter-options">
+          <label *ngFor="let frame of frameTypes">
+            <input type="checkbox"
+                   [checked]="selectedFrameTypes.includes(frame.title)"
+                   (change)="onFrameTypeChange(frame.title, $event.target.checked)">
+            {{ frame.title }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Frame Shape Filter -->
+      <div class="filter-group">
+        <h4>Frame Shape</h4>
+        <div class="filter-options">
+          <label *ngFor="let shape of frameShapes">
+            <input type="checkbox"
+                   [checked]="selectedFrameShapes.includes(shape.name)"
+                   (change)="onFrameShapeChange(shape.name, $event.target.checked)">
+            {{ shape.name }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-section">
+      <!-- Sort and View Options -->
+      <div class="products-header">
+        <div class="sort-container">
+          <label for="sort">Sort By:</label>
+          <select id="sort" (change)="onSortChange()" [(ngModel)]="selectedSort">
+            <option value="">Select</option>
+            <option *ngFor="let option of sortOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+        <div class="view-options">
+          <span>Showing {{ (currentPage * pageSize) + 1 }} - {{ Math.min((currentPage + 1) * pageSize, products.length) }} of {{ products.length }}</span>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoaded" class="loading">
+        <p>Loading products...</p>
+      </div>
+
+      <!-- Products Grid -->
+      <app-lenskart-product-card
+        [products]="products"
+        *ngIf="!isLoaded && products.length > 0"
+        (addToCartEvent)="addToCart($event)"
+        (addToWishlistEvent)="addToWishlist($event)">
+      </app-lenskart-product-card>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoaded && products.length === 0" class="empty-state">
+        <p>No products found matching your filters.</p>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="!isLoaded && products.length > 0">
+        <button 
+          [disabled]="currentPage === 0" 
+          (click)="onPageChange(currentPage - 1)"
+          class="btn">
+          Previous
+        </button>
+        
+        <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+        
+        <button 
+          [disabled]="currentPage >= totalPages - 1" 
+          (click)="onPageChange(currentPage + 1)"
+          class="btn">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

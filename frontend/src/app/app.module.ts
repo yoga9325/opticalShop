@@ -1,44 +1,35 @@
 import { ErrorInterceptor } from './services/error.interceptor';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './services/auth.interceptor';
+import { LoaderInterceptor } from './interceptors/loader.interceptor';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { AppComponent } from './app.component';
-import { HomeComponent } from './components/home/home.component';
-import { ProductListComponent } from './components/product-list/product-list.component';
-import { ProductDetailComponent } from './components/product-detail/product-detail.component';
-import { CartComponent } from './components/cart/cart.component';
-import { WishlistComponent } from './components/wishlist/wishlist.component';
-import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
-import { AdminComponent } from './components/admin/admin.component';
+import { FormsModule } from '@angular/forms';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { ContactComponent } from './components/contact/contact.component';
 
 @NgModule({
+  declarations: [
+    ContactComponent
+  ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     RouterModule,
     AppRoutingModule,
     FormsModule,
-    ReactiveFormsModule,
-    CommonModule,
-    AppComponent,
-    HomeComponent,
-    ProductListComponent,
-    ProductDetailComponent,
-    CartComponent,
-    WishlistComponent,
-    LoginComponent,
-    RegisterComponent,
-    AdminComponent
+    ToastModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
+    MessageService
   ]
 })
 export class AppModule { }

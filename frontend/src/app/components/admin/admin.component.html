@@ -5,39 +5,46 @@
       <button class="nav-btn" [class.active]="activeTab === 'products'" (click)="activeTab = 'products'">
         <i class="bi bi-box"></i> Products
       </button>
+      <button class="nav-btn" [class.active]="activeTab === 'discounts'" (click)="activeTab = 'discounts'">
+        <i class="bi bi-percent"></i> Discounts
+      </button>
       <button class="nav-btn" [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">
         <i class="bi bi-people"></i> Users
+      </button>
+      <button class="nav-btn" [class.active]="activeTab === 'advertisements'" (click)="activeTab = 'advertisements'">
+        <i class="bi bi-images"></i> Advertisements
+      </button>
+      <button class="nav-btn" [class.active]="activeTab === 'orders'" (click)="activeTab = 'orders'">
+        <i class="bi bi-receipt"></i> Orders
+      </button>
+      <button class="nav-btn" [class.active]="activeTab === 'messages'" (click)="activeTab = 'messages'">
+        <i class="bi bi-envelope"></i> Messages
       </button>
     </div>
   </div>
 
   <!-- Products Tab -->
   <div *ngIf="activeTab === 'products'" class="tab-content">
+    <!-- ... existing product content ... -->
     <!-- Create Product Form -->
-    <div class="form-container">
-      <h3>Create New Product</h3>
-      <form (ngSubmit)="createProduct()">
-        <input type="text" [(ngModel)]="newProduct.name" name="name" placeholder="Name" required>
-        <textarea [(ngModel)]="newProduct.description" name="description" placeholder="Description"></textarea>
-        <input type="text" [(ngModel)]="newProduct.brand" name="brand" placeholder="Brand">
-        <input type="text" [(ngModel)]="newProduct.category" name="category" placeholder="Category">
-        <input type="number" [(ngModel)]="newProduct.price" name="price" placeholder="Price">
-        <input type="number" [(ngModel)]="newProduct.stockQuantity" name="stockQuantity" placeholder="Stock Quantity" required>
-        <input type="text" [(ngModel)]="newProduct.imageUrl" name="imageUrl" placeholder="Image URL">
-        <button type="submit">Create Product</button>
-      </form>
-    </div>
-
     <!-- Product List using PrimeNG DataTable -->
     <div class="product-list">
-      <h3>Product List</h3>
+      <div class="flex align-items-center justify-content-between mb-3">
+        <h3>Product List</h3>
+        <!-- <button pButton icon="pi pi-plus" class="p-button-rounded p-button-primary"
+          (click)="openCreateProductModal()"></button> -->
+      </div>
       <p-table [value]="products" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
-               [rowsPerPageOptions]="[5, 10, 20]" responsiveLayout="scroll" [globalFilterFields]="['name', 'brand', 'category']">
+        [rowsPerPageOptions]="[5, 10, 20]" responsiveLayout="scroll"
+        [globalFilterFields]="['name', 'brand', 'category']">
         <ng-template pTemplate="caption">
           <div class="flex align-items-center justify-content-between">
+            <button pButton icon="pi pi-plus" class="p-button-rounded p-button-primary"
+              (click)="openCreateProductModal()"></button>
             <span class="p-input-icon-left ml-auto">
               <i class="pi pi-search"></i>
-              <input pInputText type="text" (input)="dt.filterGlobal($event, 'contains')" placeholder="Search products..." />
+              <input pInputText type="text" (input)="dt.filterGlobal($event, 'contains')"
+                placeholder="Search products..." />
             </span>
           </div>
         </ng-template>
@@ -57,32 +64,289 @@
             <td>{{ product.category }}</td>
             <td>{{ product.price | currency }}</td>
             <td>
-              <button pButton type="button" pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" 
-                      (click)="selectProduct(product)" title="Edit"></button>
-              <button pButton type="button" pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" 
-                      (click)="deleteProduct(product.id)" title="Delete"></button>
+              <button pButton type="button" pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+                (click)="selectProduct(product)" title="Edit"></button>
+              <button pButton type="button" pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                (click)="deleteProduct(product.id)" title="Delete"></button>
             </td>
           </tr>
         </ng-template>
       </p-table>
     </div>
 
-    <!-- Update Product Form -->
-    <div *ngIf="selectedProduct" class="form-container">
-      <h3>Edit Product</h3>
-      <form (ngSubmit)="updateProduct()">
-        <input type="text" [(ngModel)]="selectedProduct.name" name="name" placeholder="Name" required>
-        <textarea [(ngModel)]="selectedProduct.description" name="description" placeholder="Description"></textarea>
-        <input type="text" [(ngModel)]="selectedProduct.brand" name="brand" placeholder="Brand">
-        <input type="text" [(ngModel)]="selectedProduct.category" name="category" placeholder="Category">
-        <input type="number" [(ngModel)]="selectedProduct.price" name="price" placeholder="Price">
-        <input type="number" [(ngModel)]="selectedProduct.stockQuantity" name="stockQuantity" placeholder="Stock Quantity" required>
-        <input type="text" [(ngModel)]="selectedProduct.imageUrl" name="imageUrl" placeholder="Image URL">
-        <div class="form-actions">
-          <button type="submit">Update Product</button>
-          <button type="button" (click)="selectedProduct = null" class="btn-cancel">Cancel</button>
+    <!-- Create Product Modal -->
+    <div class="modal-overlay" *ngIf="showCreateProductModal" (click)="closeCreateProductModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()" style="max-width: 600px;">
+        <div class="modal-header">
+          <h3>Create New Product</h3>
+          <button class="close-btn" (click)="closeCreateProductModal()">&times;</button>
         </div>
-      </form>
+        <div class="modal-body">
+          <form (ngSubmit)="createProduct()">
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" [(ngModel)]="newProduct.name" name="name" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea [(ngModel)]="newProduct.description" name="description" class="form-control"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Brand</label>
+                <input type="text" [(ngModel)]="newProduct.brand" name="brand" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>Category</label>
+                <input type="text" [(ngModel)]="newProduct.category" name="category" class="form-control">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Price</label>
+                <input type="number" [(ngModel)]="newProduct.price" name="price" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>Stock</label>
+                <input type="number" [(ngModel)]="newProduct.stockQuantity" name="stockQuantity" class="form-control"
+                  required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Image URL</label>
+              <input type="text" [(ngModel)]="newProduct.imageUrl" name="imageUrl" class="form-control">
+            </div>
+            <div class="modal-footer" style="padding: 0; margin-top: 1.5rem; border: none;">
+              <button type="button" class="btn-secondary" (click)="closeCreateProductModal()"
+                style="margin-right: 0.5rem;">Cancel</button>
+              <button type="submit" class="btn-update">Create Product</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Update Product Form -->
+    <!-- Update Product Modal -->
+    <div class="modal-overlay" *ngIf="selectedProduct" (click)="selectedProduct = null">
+      <div class="modal-content" (click)="$event.stopPropagation()" style="max-width: 600px;">
+        <div class="modal-header">
+          <h3>Edit Product</h3>
+          <button class="close-btn" (click)="selectedProduct = null">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="updateProduct()">
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" [(ngModel)]="selectedProduct.name" name="name" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea [(ngModel)]="selectedProduct.description" name="description" class="form-control"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Brand</label>
+                <input type="text" [(ngModel)]="selectedProduct.brand" name="brand" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>Category</label>
+                <input type="text" [(ngModel)]="selectedProduct.category" name="category" class="form-control">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Price</label>
+                <input type="number" [(ngModel)]="selectedProduct.price" name="price" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>Stock</label>
+                <input type="number" [(ngModel)]="selectedProduct.stockQuantity" name="stockQuantity"
+                  class="form-control" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Image URL</label>
+              <input type="text" [(ngModel)]="selectedProduct.imageUrl" name="imageUrl" class="form-control">
+            </div>
+            <div class="modal-footer" style="padding: 0; margin-top: 1.5rem; border: none;">
+              <button type="button" class="btn-secondary" (click)="selectedProduct = null"
+                style="margin-right: 0.5rem;">Cancel</button>
+              <button type="submit" class="btn-update">Update Product</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Discounts Tab -->
+  <div *ngIf="activeTab === 'discounts'" class="tab-content">
+    <!-- Create Discount Form -->
+    <!-- Discount List -->
+    <div class="product-list">
+      <div class="flex align-items-center justify-content-between mb-3">
+        <h3>Discount List</h3>
+
+      </div>
+      <p-table [value]="discounts" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
+        [rowsPerPageOptions]="[5, 10, 20]" responsiveLayout="scroll" [globalFilterFields]="['code', 'description']">
+        <ng-template pTemplate="caption">
+          <div class="flex align-items-center justify-content-between">
+            <button pButton icon="pi pi-plus" class="p-button-rounded p-button-primary"
+              (click)="openCreateDiscountModal()"></button>
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="dt2.filterGlobal($event, 'contains')"
+                placeholder="Search discounts..." />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="code">Code <p-sortIcon field="code"></p-sortIcon></th>
+            <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
+            <th pSortableColumn="percentage">Percentage <p-sortIcon field="percentage"></p-sortIcon></th>
+            <th pSortableColumn="fixedAmount">Fixed Amount <p-sortIcon field="fixedAmount"></p-sortIcon></th>
+            <th>Product</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-discount>
+          <tr>
+            <td>{{ discount.code }}</td>
+            <td>{{ discount.description }}</td>
+            <td>{{ discount.percentage }}%</td>
+            <td>{{ discount.fixedAmount | currency }}</td>
+            <td>{{ discount.product ? discount.product.name : 'Global' }}</td>
+            <td>
+              <span class="badge" [class]="discount.active ? 'bg-success' : 'bg-danger'">
+                {{ discount.active ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td>
+              <button pButton type="button" pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+                (click)="selectDiscount(discount)" title="Edit"></button>
+              <button pButton type="button" pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                (click)="deleteDiscount(discount.id)" title="Delete"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Create Discount Modal -->
+    <div class="modal-overlay" *ngIf="showCreateDiscountModal" (click)="closeCreateDiscountModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()" style="max-width: 600px;">
+        <div class="modal-header">
+          <h3>Create New Discount</h3>
+          <button class="close-btn" (click)="closeCreateDiscountModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="createDiscount()">
+            <div class="form-group">
+              <label>Discount Code</label>
+              <input type="text" [(ngModel)]="newDiscount.code" name="code" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea [(ngModel)]="newDiscount.description" name="description" class="form-control"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Percentage (%)</label>
+                <input type="number" [(ngModel)]="newDiscount.percentage" name="percentage" class="form-control"
+                  step="0.01">
+              </div>
+              <div class="form-group">
+                <label>Fixed Amount</label>
+                <input type="number" [(ngModel)]="newDiscount.fixedAmount" name="fixedAmount" class="form-control"
+                  step="0.01">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Start Date</label>
+                <input type="datetime-local" [(ngModel)]="newDiscount.startDate" name="startDate" class="form-control">
+              </div>
+              <div class="form-group">
+                <label>End Date</label>
+                <input type="datetime-local" [(ngModel)]="newDiscount.endDate" name="endDate" class="form-control">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Applicable Product</label>
+              <select [(ngModel)]="newDiscount.productId" name="productId" class="form-control">
+                <option value="">Global Discount (all products)</option>
+                <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+              </select>
+            </div>
+            <div class="modal-footer" style="padding: 0; margin-top: 1.5rem; border: none;">
+              <button type="button" class="btn-secondary" (click)="closeCreateDiscountModal()"
+                style="margin-right: 0.5rem;">Cancel</button>
+              <button type="submit" class="btn-update">Create Discount</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Update Discount Modal -->
+    <div class="modal-overlay" *ngIf="selectedDiscount" (click)="selectedDiscount = null">
+      <div class="modal-content" (click)="$event.stopPropagation()" style="max-width: 600px;">
+        <div class="modal-header">
+          <h3>Edit Discount</h3>
+          <button class="close-btn" (click)="selectedDiscount = null">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="updateDiscount()">
+            <div class="form-group">
+              <label>Discount Code</label>
+              <input type="text" [(ngModel)]="selectedDiscount.code" name="code" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea [(ngModel)]="selectedDiscount.description" name="description" class="form-control"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Percentage (%)</label>
+                <input type="number" [(ngModel)]="selectedDiscount.percentage" name="percentage" class="form-control"
+                  step="0.01">
+              </div>
+              <div class="form-group">
+                <label>Fixed Amount</label>
+                <input type="number" [(ngModel)]="selectedDiscount.fixedAmount" name="fixedAmount" class="form-control"
+                  step="0.01">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Start Date</label>
+                <input type="datetime-local" [(ngModel)]="selectedDiscount.startDate" name="startDate"
+                  class="form-control">
+              </div>
+              <div class="form-group">
+                <label>End Date</label>
+                <input type="datetime-local" [(ngModel)]="selectedDiscount.endDate" name="endDate" class="form-control">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Applicable Product</label>
+              <select [(ngModel)]="selectedDiscount.productId" name="productId" class="form-control">
+                <option value="">Global Discount (all products)</option>
+                <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+              </select>
+            </div>
+            <div class="modal-footer" style="padding: 0; margin-top: 1.5rem; border: none;">
+              <button type="button" class="btn-secondary" (click)="selectedDiscount = null"
+                style="margin-right: 0.5rem;">Cancel</button>
+              <button type="submit" class="btn-update">Update Discount</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -90,4 +354,163 @@
   <div *ngIf="activeTab === 'users'" class="tab-content">
     <app-user-list></app-user-list>
   </div>
+
+  <!-- Advertisements Tab -->
+  <div *ngIf="activeTab === 'advertisements'" class="tab-content">
+    <app-admin-advertisement></app-admin-advertisement>
+  </div>
+
+  <!-- Orders Tab -->
+  <div *ngIf="activeTab === 'orders'" class="tab-content">
+    <div class="product-list">
+      <h3>Order Management</h3>
+      <p-table [value]="orders" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+        [rowsPerPageOptions]="[10, 20, 50]" responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-order>
+          <tr>
+            <td>#{{order.id}}</td>
+            <td>{{order.user?.username || 'N/A'}}</td>
+            <td>{{order.orderDate | date:'short'}}</td>
+            <td>₹{{order.totalAmount}}</td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(order.status)">{{order.status}}</span>
+            </td>
+            <td>
+              <span class="status-badge"
+                [ngClass]="getPaymentStatusClass(order.paymentStatus)">{{order.paymentStatus}}</span>
+            </td>
+            <td>
+              <p-button label="View" icon="pi pi-eye" styleClass="btn-view" [text]="true"
+                (click)="viewOrder(order)"></p-button>
+              <p-button label="Update" icon="pi pi-pencil" styleClass="btn-update" [text]="false"
+                (click)="openUpdateStatusModal(order)"></p-button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div class="modal-overlay" *ngIf="selectedOrderForView" (click)="closeOrderView()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Order #{{selectedOrderForView.id}} Details</h3>
+          <button class="close-btn" (click)="closeOrderView()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-section">
+            <h4>Customer Information</h4>
+            <p><strong>Name:</strong> {{selectedOrderForView.user?.username}}</p>
+            <p><strong>Email:</strong> {{selectedOrderForView.user?.email}}</p>
+          </div>
+
+          <div class="detail-section">
+            <h4>Shipping Address</h4>
+            <p>{{selectedOrderForView.shippingAddress}}</p>
+          </div>
+
+          <div class="detail-section">
+            <h4>Order Items</h4>
+            <div class="items-list">
+              <div class="order-item" *ngFor="let item of selectedOrderForView.orderItems">
+                <div class="item-info">
+                  <span class="item-name">{{item.product?.name}}</span>
+                  <span class="item-meta">Qty: {{item.quantity}}</span>
+                </div>
+                <span class="item-price">₹{{item.unitPrice}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section total-section">
+            <div class="total-row">
+              <span>Total Amount:</span>
+              <span class="total-amount">₹{{selectedOrderForView.totalAmount}}</span>
+            </div>
+            <div class="status-row">
+              <span class="status-badge" [ngClass]="getStatusClass(selectedOrderForView.status)">
+                {{selectedOrderForView.status}}
+              </span>
+              <span class="status-badge" [ngClass]="getPaymentStatusClass(selectedOrderForView.paymentStatus)">
+                {{selectedOrderForView.paymentStatus}}
+              </span>
+            </div>
+          </div>
+
+          <!-- Debug Info -->
+          <!-- <div class="detail-section" style="margin-top: 1rem; background: #eee; padding: 1rem; border-radius: 8px;">
+            <h4>Debug Data</h4>
+            <pre style="font-size: 0.7rem; overflow: auto; max-height: 200px;">{{selectedOrderForView | json}}</pre>
+          </div> -->
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="closeOrderView()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div class="modal-overlay" *ngIf="selectedOrderForUpdate" (click)="closeUpdateStatusModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()" style="max-width: 400px;">
+        <div class="modal-header">
+          <h3>Update Order Status</h3>
+          <button class="close-btn" (click)="closeUpdateStatusModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="statusSelect"
+              style="display: block; margin-bottom: 0.5rem; color: #64748b; font-weight: 500;">Select New Status</label>
+            <select id="statusSelect" [(ngModel)]="newStatus"
+              style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1rem;">
+              <option *ngFor="let status of statusOptions" [value]="status">{{status}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="closeUpdateStatusModal()" style="margin-right: 0.5rem;">Cancel</button>
+          <button class="btn-update" (click)="saveOrderStatus()">Update Status</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages Tab -->
+  <div *ngIf="activeTab === 'messages'" class="tab-content">
+    <div class="product-list">
+      <h3>Messages</h3>
+      <p-table [value]="messages" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+        [rowsPerPageOptions]="[10, 20, 50]" responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Subject</th>
+            <th>Message</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-msg>
+          <tr>
+            <td>{{msg.createdAt | date:'short'}}</td>
+            <td>{{msg.name}}</td>
+            <td>{{msg.email}}</td>
+            <td>{{msg.subject}}</td>
+            <td>{{msg.message}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
 </div>

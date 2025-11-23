@@ -1,14 +1,128 @@
-<div *ngIf="product" class="product-detail">
-  <div class="media">
-    <img [src]="product.imageUrl || 'assets/images/frame-1.svg'" alt="{{product.name}}"/>
-  </div>
-  <div class="meta">
-    <h2>{{product.name}}</h2>
-    <p>{{product.description}}</p>
-    <p class="price">₹{{product.price}}</p>
-    <div class="buy">
-      <input type="number" [(ngModel)]="qty" min="1" />
-      <button class="btn btn-primary" (click)="addToCart()">Add to cart</button>
+<div *ngIf="product" class="product-detail-page">
+  <div class="product-detail-container">
+    <!-- Left Side - Image Gallery -->
+    <div class="product-gallery">
+      <div class="main-image">
+        <img [src]="selectedImage || product.imageUrl || 'assets/images/frame-1.svg'" [alt]="product.name" />
+      </div>
+      <div class="thumbnail-images">
+        <img [src]="product.imageUrl || 'assets/images/frame-1.svg'" [alt]="product.name" class="thumbnail"
+          [class.active]="selectedImage === product.imageUrl" (click)="selectedImage = product.imageUrl">
+        <img [src]="product.imageUrl || 'assets/images/frame-1.svg'" [alt]="product.name + ' side'" class="thumbnail"
+          (click)="selectedImage = product.imageUrl">
+      </div>
+    </div>
+
+    <!-- Right Side - Product Information -->
+    <div class="product-info">
+      <!-- Brand & Name -->
+      <div class="product-header">
+        <div class="brand-badge">{{product.brand || 'Lenskart Air'}}</div>
+        <h1 class="product-name">{{product.name}}</h1>
+        <p class="product-subtitle">{{product.frameType || 'Full Rim'}} • {{product.frameShape || 'Square'}}</p>
+      </div>
+
+      <!-- Rating Display -->
+      <div class="rating-display">
+        <div class="stars-display">
+          <span *ngFor="let star of [1,2,3,4,5]" class="star" [class.filled]="star <= averageRating">★</span>
+        </div>
+        <span class="rating-text">{{averageRating | number:'1.1-1'}} ({{ratingCount}} ratings)</span>
+      </div>
+
+      <!-- Price Section -->
+      <div class="price-section">
+        <div class="price-row">
+          <span class="current-price">₹{{product.price}}</span>
+          <span class="original-price" *ngIf="product.mPrice">₹{{product.mPrice}}</span>
+          <span class="discount-badge" *ngIf="product.mPrice">{{getDiscount()}}% OFF</span>
+        </div>
+        <p class="tax-info">+ ₹50 Shipping Charges</p>
+      </div>
+
+      <!-- Color Options -->
+      <div class="color-section" *ngIf="product.color">
+        <p class="section-label">Color: <strong>{{product.color}}</strong></p>
+        <div class="color-options">
+          <div class="color-option active" [style.background-color]="getColorCode(product.color)"></div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-primary btn-large" (click)="addToCart()">
+          <i class="bi bi-cart-plus"></i> Add to Cart
+        </button>
+        <button class="btn btn-secondary btn-large" (click)="addToWishlist()">
+          <i class="bi bi-heart"></i> Wishlist
+        </button>
+      </div>
+
+      <!-- Try On Button -->
+      <button class="btn btn-try-on">
+        <i class="bi bi-camera"></i> Try On
+      </button>
+
+      <!-- User Rating Section -->
+      <div class="user-rating-section">
+        <div class="user-rating" *ngIf="auth.isLoggedIn()">
+          <p class="rating-label">Rate this product:</p>
+          <div class="stars-input">
+            <span *ngFor="let star of [1,2,3,4,5]" class="star clickable" [class.filled]="star <= userRating"
+              [class.hover]="star <= hoverRating" (click)="submitRating(star); $event.stopPropagation()"
+              (mouseenter)="hoverRating = star" (mouseleave)="hoverRating = 0">★</span>
+          </div>
+          <span class="your-rating" *ngIf="userRating > 0">Your rating: {{userRating}} stars</span>
+        </div>
+        <p class="login-prompt" *ngIf="!auth.isLoggedIn()">
+          <a (click)="auth.triggerLoginModal(); $event.stopPropagation()"
+            style="cursor: pointer; color: #667eea;">Login</a> to rate this product
+        </p>
+      </div>
+
+      <!-- Technical Information -->
+      <div class="technical-info">
+        <div class="info-header" (click)="showTechnicalInfo = !showTechnicalInfo">
+          <h3>Technical Information</h3>
+          <i class="bi" [class.bi-chevron-down]="!showTechnicalInfo" [class.bi-chevron-up]="showTechnicalInfo"></i>
+        </div>
+        <div class="info-content" *ngIf="showTechnicalInfo">
+          <div class="info-row">
+            <span class="info-label">Product Id</span>
+            <span class="info-value">{{product.id}}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Model No.</span>
+            <span class="info-value">{{product.brand || 'LA'}} {{product.id}}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Frame Size</span>
+            <span class="info-value">Medium</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Frame Width</span>
+            <span class="info-value">134 mm</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Frame Type</span>
+            <span class="info-value">{{product.frameType || 'Full Rim'}}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Material</span>
+            <span class="info-value">{{product.material || 'Acetate'}}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Category</span>
+            <span class="info-value">{{product.category}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Description -->
+      <div class="product-description">
+        <h3>Product Description</h3>
+        <p>{{product.description}}</p>
+      </div>
     </div>
   </div>
 </div>

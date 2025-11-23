@@ -1,0 +1,11 @@
+.card {
+    padding: 2rem;
+}
+
+/* Ensure table images are not too large */
+p-table img {
+    max-height: 80px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 4px;
+}
