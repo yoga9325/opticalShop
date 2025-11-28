@@ -15,8 +15,11 @@ public class JwtUtil {
     @Value("${jwt.secret:ChangeThisSecretToAStrongValue}")
     private String secret;
 
-    @Value("${jwt.expiration-ms:${jwt.expiration:86400000}}")
+    @Value("${jwt.expiration-ms:900000}") // 5 minutes for access token (testing)
     private long expirationMs;
+
+    @Value("${jwt.refresh-expiration-ms:604800000}") // 2 minutes for refresh token (testing)
+    private long refreshExpirationMs;
 
     public String generateToken(String username) {
         Date now = new Date();
@@ -25,6 +28,18 @@ public class JwtUtil {
                 .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(exp)
+                .signWith(SignatureAlgorithm.HS256, secret)
+                .compact();
+    }
+
+    public String generateRefreshToken(String username) {
+        Date now = new Date();
+        Date exp = new Date(now.getTime() + refreshExpirationMs);
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(now)
+                .setExpiration(exp)
+                .claim("type", "refresh")
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
@@ -51,5 +66,15 @@ public class JwtUtil {
     public boolean validateToken(String token, org.springframework.security.core.userdetails.UserDetails userDetails) {
         final String username = extractUsername(token);
         return username != null && username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            String type = claims.get("type", String.class);
+            return "refresh".equals(type) && !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

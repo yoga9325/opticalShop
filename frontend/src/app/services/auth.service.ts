@@ -18,11 +18,12 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   login(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { username, password }).pipe(
+    return this.http.post(`${this.apiUrl}/login`, { username, password }, { withCredentials: true }).pipe(
       tap((res: any) => {
         if (res && res.token) {
           localStorage.setItem('token', res.token);
-          localStorage.setItem('user_role', res.role); // Store the role directly
+          // Refresh token is now handled by HttpOnly cookie
+          localStorage.setItem('user_role', res.role);
           localStorage.setItem('username', res.username);
           this.authStateSubject.next(true);
         }
@@ -39,7 +40,22 @@ export class AuthService {
   }
 
   verifyOtp(email?: string, mobile?: string, otp?: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/verify-otp`, { email, mobile, otp }).pipe(
+    return this.http.post(`${this.apiUrl}/verify-otp`, { email, mobile, otp }, { withCredentials: true }).pipe(
+      tap((res: any) => {
+        if (res && res.token) {
+          localStorage.setItem('token', res.token);
+          // Refresh token is now handled by HttpOnly cookie
+          localStorage.setItem('user_role', res.role);
+          localStorage.setItem('username', res.username);
+          this.authStateSubject.next(true);
+        }
+      })
+    );
+  }
+
+  refreshToken(): Observable<any> {
+    // No need to send refresh token in body, it's in the cookie
+    return this.http.post(`${this.apiUrl}/refresh`, {}, { withCredentials: true }).pipe(
       tap((res: any) => {
         if (res && res.token) {
           localStorage.setItem('token', res.token);
@@ -51,8 +67,18 @@ export class AuthService {
     );
   }
 
+  logoutApi(): Observable<any> {
+    const username = localStorage.getItem('username');
+    return this.http.post(`${this.apiUrl}/logout`, { username }, { withCredentials: true });
+  }
+
   logout(): void {
+    const username = localStorage.getItem('username');
+    if (username) {
+      this.logoutApi().subscribe();
+    }
     localStorage.removeItem('token');
+    // localStorage.removeItem('refreshToken'); // No longer needed
     localStorage.removeItem('user_role');
     localStorage.removeItem('username');
     this.authStateSubject.next(false);

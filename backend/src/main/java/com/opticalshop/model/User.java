@@ -37,6 +37,10 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
 
+    private String refreshToken;
+
+    private java.time.LocalDateTime refreshTokenExpiry;
+
     // getters & setters
     public Long getId() {
         return id;
@@ -108,5 +112,21 @@ public class User {
 
     public void setOtpExpiry(java.time.LocalDateTime otpExpiry) {
         this.otpExpiry = otpExpiry;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public java.time.LocalDateTime getRefreshTokenExpiry() {
+        return refreshTokenExpiry;
+    }
+
+    public void setRefreshTokenExpiry(java.time.LocalDateTime refreshTokenExpiry) {
+        this.refreshTokenExpiry = refreshTokenExpiry;
     }
 }

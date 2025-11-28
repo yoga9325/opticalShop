@@ -81,7 +81,25 @@ public class AuthController {
         }
 
         String token = jwtUtil.generateToken(username);
-        return ResponseEntity.ok(Map.of("token", token, "role", user_role, "username", usernameApi));
+        String refreshToken = jwtUtil.generateRefreshToken(username);
+
+        // Store refresh token in database
+        User user = userRepository.findByUsername(username).orElseThrow();
+        user.setRefreshToken(refreshToken);
+        user.setRefreshTokenExpiry(java.time.LocalDateTime.now().plusDays(7));
+        userRepository.save(user);
+
+        org.springframework.http.ResponseCookie cookie = org.springframework.http.ResponseCookie
+                .from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(Map.of("token", token, "role", user_role, "username", usernameApi));
     }
 
     @Autowired
@@ -166,10 +184,88 @@ public class AuthController {
         user.setOtpExpiry(null);
         userRepository.save(user);
 
-        // Generate Token
+        // Generate Tokens
         String token = jwtUtil.generateToken(user.getUsername());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUsername());
         String user_role = String.join(",", user.getRoles());
 
-        return ResponseEntity.ok(Map.of("token", token, "role", user_role, "username", user.getUsername()));
+        // Store refresh token
+        user.setRefreshToken(refreshToken);
+        user.setRefreshTokenExpiry(java.time.LocalDateTime.now().plusDays(7));
+        userRepository.save(user);
+
+        org.springframework.http.ResponseCookie cookie = org.springframework.http.ResponseCookie
+                .from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(Map.of("token", token, "role", user_role, "username", user.getUsername()));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Refresh token is required"));
+        }
+
+        // Validate refresh token format
+        if (!jwtUtil.validateRefreshToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid refresh token"));
+        }
+
+        // Extract username and find user
+        String username = jwtUtil.extractUsername(refreshToken);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Verify refresh token matches stored token and is not expired
+        if (!refreshToken.equals(user.getRefreshToken())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid refresh token"));
+        }
+
+        if (user.getRefreshTokenExpiry() == null
+                || user.getRefreshTokenExpiry().isBefore(java.time.LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Refresh token expired"));
+        }
+
+        // Generate new access token
+        String newAccessToken = jwtUtil.generateToken(username);
+        String user_role = String.join(",", user.getRoles());
+
+        return ResponseEntity.ok(Map.of("token", newAccessToken, "role", user_role, "username", username));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody Map<String, String> body) {
+        String username = body.get("username");
+
+        if (username == null || username.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Username is required"));
+        }
+
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user != null) {
+            // Invalidate refresh token
+            user.setRefreshToken(null);
+            user.setRefreshTokenExpiry(null);
+            userRepository.save(user);
+        }
+
+        org.springframework.http.ResponseCookie cookie = org.springframework.http.ResponseCookie
+                .from("refreshToken", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(Map.of("message", "Logged out successfully"));
     }
 }

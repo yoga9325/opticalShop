@@ -27,7 +27,7 @@ public class EncryptionResponseAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(@NonNull MethodParameter returnType,
             @NonNull Class<? extends HttpMessageConverter<?>> converterType) {
-        // return true; //encriyption response disabled for development
+        // return true; // encriyption response disabled for development
         return false;
     }
 
