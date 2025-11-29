@@ -12,9 +12,17 @@ import { FormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ContactComponent } from './components/contact/contact.component';
+import { BillingComponent } from './components/admin/billing/billing.component';
+import { TableModule } from 'primeng/table';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { DropdownModule } from 'primeng/dropdown';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { TabViewModule } from 'primeng/tabview';
 
 @NgModule({
   declarations: [
+    ContactComponent,
     ContactComponent
   ],
   imports: [
@@ -24,7 +32,13 @@ import { ContactComponent } from './components/contact/contact.component';
     RouterModule,
     AppRoutingModule,
     FormsModule,
-    ToastModule
+    ToastModule,
+    TableModule,
+    AutoCompleteModule,
+    DropdownModule,
+    InputTextModule,
+    ButtonModule,
+    TabViewModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

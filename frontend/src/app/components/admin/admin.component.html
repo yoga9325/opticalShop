@@ -17,6 +17,9 @@
       <button class="nav-btn" [class.active]="activeTab === 'orders'" (click)="activeTab = 'orders'">
         <i class="bi bi-receipt"></i> Orders
       </button>
+      <button class="nav-btn" [class.active]="activeTab === 'billing'" (click)="activeTab = 'billing'">
+        <i class="bi bi-cash-coin"></i> Billing
+      </button>
       <button class="nav-btn" [class.active]="activeTab === 'messages'" (click)="activeTab = 'messages'">
         <i class="bi bi-envelope"></i> Messages
       </button>
@@ -483,6 +486,11 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Billing Tab -->
+  <div *ngIf="activeTab === 'billing'" class="tab-content">
+    <app-billing></app-billing>
   </div>
 
   <!-- Messages Tab -->
