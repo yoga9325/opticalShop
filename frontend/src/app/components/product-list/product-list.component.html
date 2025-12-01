@@ -5,7 +5,12 @@
   </div>
   <div class="cards">
     <div *ngFor="let p of products" class="card">
-      <img [src]="p.imageUrl || 'assets/images/frame-1.svg'" alt="{{p.name}}" />
+      <div class="position-relative">
+        <img [src]="p.imageUrl || 'assets/images/frame-1.svg'" alt="{{p.name}}" />
+        <button class="btn btn-link position-absolute top-0 end-0 p-2" (click)="toggleWishlist(p)">
+          <i class="bi" [ngClass]="isInWishlist(p.id) ? 'bi-heart-fill text-danger' : 'bi-heart text-dark'"></i>
+        </button>
+      </div>
       <h4>{{p.name}}</h4>
       <p class="price">₹{{p.price}}</p>
       <a routerLink="/product/{{p.id}}" class="btn btn-sm btn-primary">View</a>

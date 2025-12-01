@@ -1,0 +1,23 @@
+/* Product List Styles */
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-link {
+    text-decoration: none;
+}
+
+.bi-heart-fill {
+    color: #dc3545;
+    /* Bootstrap danger color */
+}
+
+.bi-heart {
+    color: #212529;
+    /* Bootstrap dark color */
+}

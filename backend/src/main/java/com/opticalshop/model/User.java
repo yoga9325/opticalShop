@@ -20,6 +20,12 @@ public class User {
 
     private String mobileNumber;
 
+    private String firstName;
+
+    private String lastName;
+
+    private String address;
+
     private boolean enabled = true;
 
     private String otp;
@@ -128,5 +134,29 @@ public class User {
 
     public void setRefreshTokenExpiry(java.time.LocalDateTime refreshTokenExpiry) {
         this.refreshTokenExpiry = refreshTokenExpiry;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

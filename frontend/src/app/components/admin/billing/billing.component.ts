@@ -60,8 +60,21 @@ export class BillingComponent implements OnInit {
     private messageService: MessageService
   ) { }
 
+  logoBase64: string = '';
+
   ngOnInit(): void {
     this.loadBillHistory();
+    this.loadImage();
+  }
+
+  loadImage() {
+    this.http.get('assets/logo.jpg', { responseType: 'blob' }).subscribe(blob => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        this.logoBase64 = reader.result as string;
+      };
+      reader.readAsDataURL(blob);
+    });
   }
 
   searchProduct(event: any) {
@@ -157,6 +170,8 @@ export class BillingComponent implements OnInit {
       </tr>
     `).join('');
 
+    const logoHtml = this.logoBase64 ? `<img src="${this.logoBase64}" alt="Logo" style="height: 80px; margin-bottom: 10px;">` : '<h1>Optical Shop</h1>';
+
     printWindow.document.write(`
       <html>
         <head>
@@ -173,7 +188,7 @@ export class BillingComponent implements OnInit {
         </head>
         <body>
           <div class="header">
-            <h1>Optical Shop</h1>
+            ${logoHtml}
             <p>123 Vision Street, Eye City</p>
             <p>Phone: +91 98765 43210</p>
           </div>
@@ -214,18 +229,25 @@ export class BillingComponent implements OnInit {
     const doc = new jsPDF();
 
     // Header
-    doc.setFontSize(18);
-    doc.text('Optical Shop', 105, 20, { align: 'center' });
-    doc.setFontSize(12);
-    doc.text('123 Vision Street, Eye City', 105, 30, { align: 'center' });
-    doc.text('Phone: +91 98765 43210', 105, 36, { align: 'center' });
+    if (this.logoBase64) {
+      doc.addImage(this.logoBase64, 'JPEG', 75, 10, 60, 30); // Centered logo
+      doc.setFontSize(14);
+      doc.text('123 Vision Street, Eye City', 105, 45, { align: 'center' });
+      doc.text('Phone: +91 98765 43210', 105, 52, { align: 'center' });
+    } else {
+      doc.setFontSize(22);
+      doc.text('Optical Shop', 105, 20, { align: 'center' });
+      doc.setFontSize(14);
+      doc.text('123 Vision Street, Eye City', 105, 30, { align: 'center' });
+      doc.text('Phone: +91 98765 43210', 105, 38, { align: 'center' });
+    }
 
     // Bill Details
-    doc.setFontSize(10);
-    doc.text(`Bill ID: #${bill.id}`, 14, 50);
-    doc.text(`Date: ${new Date(bill.billDate).toLocaleString()}`, 14, 56);
-    doc.text(`Customer: ${bill.customerName}`, 14, 62);
-    doc.text(`Mobile: ${bill.customerMobile}`, 14, 68);
+    doc.setFontSize(12);
+    doc.text(`Bill ID: #${bill.id}`, 14, 60);
+    doc.text(`Date: ${new Date(bill.billDate).toLocaleString()}`, 14, 68);
+    doc.text(`Customer: ${bill.customerName}`, 14, 76);
+    doc.text(`Mobile: ${bill.customerMobile}`, 14, 84);
 
     // Items Table
     const items = bill.billItems.map((item: any) => [
@@ -236,18 +258,20 @@ export class BillingComponent implements OnInit {
     ]);
 
     (doc as any).autoTable({
-      startY: 75,
+      startY: 90,
       head: [['Item', 'Qty', 'Price', 'Amount']],
       body: items,
       theme: 'striped',
-      headStyles: { fillColor: [102, 126, 234] }
+      headStyles: { fillColor: [102, 126, 234], fontSize: 12 },
+      bodyStyles: { fontSize: 11 },
+      styles: { cellPadding: 5 }
     });
 
     // Total
-    const finalY = (doc as any).lastAutoTable.finalY || 75;
-    doc.setFontSize(12);
+    const finalY = (doc as any).lastAutoTable.finalY || 90;
+    doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Total Amount: Rs. ${bill.totalAmount}`, 196, finalY + 10, { align: 'right' });
+    doc.text(`Total Amount: Rs. ${bill.totalAmount}`, 196, finalY + 15, { align: 'right' });
 
     // Save
     doc.save(`bill_${bill.id}.pdf`);
