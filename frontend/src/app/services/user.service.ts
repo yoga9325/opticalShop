@@ -7,9 +7,13 @@ import { User } from '../models';
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private base = `${environment.apiUrl}/users`;
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getMe(): Observable<User> {
     return this.http.get<User>(`${this.base}/me`);
+  }
+
+  updateProfile(user: User): Observable<User> {
+    return this.http.put<User>(`${this.base}/me`, user);
   }
 }

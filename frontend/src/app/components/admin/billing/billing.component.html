@@ -1,0 +1,164 @@
+<div class="billing-container">
+    <div class="card">
+        <p-tabView>
+            <p-tabPanel header="New Bill">
+                <div class="grid">
+                    <!-- Customer Details Section -->
+                    <div class="col-12 md:col-4">
+                        <div class="form-section">
+                            <h3><i class="pi pi-user"></i> Customer Details</h3>
+                            <div class="field">
+                                <label>Customer Name</label>
+                                <input pInputText [(ngModel)]="bill.customerName" placeholder="Enter Name">
+                            </div>
+                            <div class="field">
+                                <label>Mobile Number</label>
+                                <input pInputText [(ngModel)]="bill.customerMobile" placeholder="Enter Mobile">
+                            </div>
+                            <div class="field">
+                                <label>Email (Optional)</label>
+                                <input pInputText [(ngModel)]="bill.customerEmail" placeholder="Enter Email">
+                            </div>
+                            <div class="field">
+                                <label>Payment Mode</label>
+                                <p-dropdown [options]="paymentModes" [(ngModel)]="bill.paymentMode"
+                                    [style]="{'width':'100%'}"></p-dropdown>
+                            </div>
+
+                            <!-- Conditional Payment Details -->
+                            <div class="field" *ngIf="bill.paymentMode === 'UPI'">
+                                <label>Transaction ID</label>
+                                <input pInputText [(ngModel)]="bill.paymentDetails" placeholder="Enter Transaction ID">
+                            </div>
+                            <div class="field" *ngIf="bill.paymentMode === 'CARD'">
+                                <label>Card Last 4 Digits</label>
+                                <input pInputText [(ngModel)]="bill.paymentDetails" placeholder="Enter Last 4 Digits"
+                                    maxlength="4">
+                            </div>
+
+                            <div class="field">
+                                <label>Promo Code</label>
+                                <div class="p-inputgroup">
+                                    <input pInputText [(ngModel)]="bill.promoCode" placeholder="Enter Promo Code">
+                                    <button type="button" pButton label="Apply" class="p-button-secondary"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Selection Section -->
+                    <div class="col-12 md:col-8">
+                        <div class="form-section">
+                            <h3><i class="pi pi-shopping-cart"></i> Add Products</h3>
+                            <div class="grid">
+                                <div class="col-12 md:col-6 field">
+                                    <label>Search Product</label>
+                                    <p-autoComplete [(ngModel)]="selectedProduct" [suggestions]="filteredProducts"
+                                        (completeMethod)="searchProduct($event)" field="name" [dropdown]="true"
+                                        placeholder="Search Product" [style]="{'width':'100%'}">
+                                        <ng-template let-product pTemplate="item">
+                                            <div class="flex align-items-center gap-2">
+                                                <img [src]="product.imageUrl || 'assets/placeholder.png'"
+                                                    style="width: 30px; height: 30px; object-fit: cover; border-radius: 4px;" />
+                                                <div>{{product.name}} - ₹{{product.price}}</div>
+                                            </div>
+                                        </ng-template>
+                                    </p-autoComplete>
+                                </div>
+                                <div class="col-6 md:col-3 field">
+                                    <label>Quantity</label>
+                                    <input pInputText type="number" [(ngModel)]="quantity" min="1">
+                                </div>
+                                <div class="col-6 md:col-3 field flex align-items-end">
+                                    <button pButton label="Add" icon="pi pi-plus" class="p-button-info w-full"
+                                        (click)="addToBill()"></button>
+                                </div>
+                            </div>
+
+                            <p-table [value]="bill.billItems" styleClass="p-datatable-sm mt-3">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Qty</th>
+                                        <th>Amount</th>
+                                        <th style="width: 50px"></th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-item let-i="rowIndex">
+                                    <tr>
+                                        <td>{{item.productName}}</td>
+                                        <td>₹{{item.price}}</td>
+                                        <td>{{item.quantity}}</td>
+                                        <td>₹{{item.amount}}</td>
+                                        <td>
+                                            <button pButton icon="pi pi-trash"
+                                                class="p-button-danger p-button-rounded p-button-text"
+                                                (click)="removeItem(i)"></button>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+
+                            <div class="total-display">
+                                <h3>Total Amount</h3>
+                                <div class="amount">₹{{bill.totalAmount || 0}}</div>
+                            </div>
+
+                            <div class="flex justify-content-end mt-4">
+                                <button pButton label="Generate Bill" icon="pi pi-check"
+                                    class="p-button-success p-button-lg" (click)="saveBill()"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </p-tabPanel>
+
+            <p-tabPanel header="Bill History">
+                <p-table [value]="billHistory" [paginator]="true" [rows]="10" styleClass="p-datatable-gridlines">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Bill ID</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Mobile</th>
+                            <th>Amount</th>
+                            <th>Payment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-bill>
+                        <tr>
+                            <td><span class="font-bold">#{{bill.id}}</span></td>
+                            <td>{{bill.billDate | date:'mediumDate'}}</td>
+                            <td>{{bill.customerName}}</td>
+                            <td>{{bill.customerMobile}}</td>
+                            <td class="font-bold text-green-600">₹{{bill.totalAmount}}</td>
+                            <td>
+                                <span
+                                    [class]="'status-badge status-' + (bill.paymentMode === 'CASH' ? 'confirmed' : 'shipped')">
+                                    {{bill.paymentMode}}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon btn-print" (click)="printBill(bill)" title="Print Bill">
+                                        <i class="pi pi-print"></i>
+                                    </button>
+                                    <button class="btn-icon btn-whatsapp" (click)="shareWhatsApp(bill)"
+                                        title="Share on WhatsApp">
+                                        <i class="pi pi-whatsapp"></i>
+                                    </button>
+                                    <button class="btn-icon btn-email" (click)="shareEmail(bill)"
+                                        title="Share via Email">
+                                        <i class="pi pi-envelope"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </p-tabPanel>
+        </p-tabView>
+    </div>
+</div>

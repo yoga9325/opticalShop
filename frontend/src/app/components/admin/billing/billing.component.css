@@ -1,0 +1,188 @@
+/* Main Card Styling */
+.billing-container {
+    padding: 1rem;
+}
+
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* Form Styling */
+.form-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.form-section h3 {
+    margin: 0 0 1.5rem 0;
+    color: #1e293b;
+    font-size: 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-section h3 i {
+    color: #667eea;
+}
+
+.field {
+    margin-bottom: 1.5rem;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #64748b;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* PrimeNG Input Overrides */
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-dropdown,
+:host ::ng-deep .p-autocomplete {
+    width: 100%;
+}
+
+:host ::ng-deep .p-inputtext {
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1;
+    transition: all 0.2s;
+}
+
+:host ::ng-deep .p-inputtext:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Buttons */
+.action-btn {
+    width: 100%;
+    margin-top: 1.8rem;
+}
+
+:host ::ng-deep .p-button {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+}
+
+:host ::ng-deep .p-button-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+}
+
+:host ::ng-deep .p-button-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+}
+
+/* Table Styling */
+:host ::ng-deep .p-datatable {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead>tr>th {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 1rem;
+    font-weight: 600;
+    border: none;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody>tr>td {
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody>tr:last-child>td {
+    border-bottom: none;
+}
+
+/* Total Amount Display */
+.total-display {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.total-display h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.total-display .amount {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Action Buttons Group */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+    color: white;
+}
+
+.btn-icon:hover {
+    transform: translateY(-2px);
+}
+
+.btn-print {
+    background: #64748b;
+}
+
+.btn-whatsapp {
+    background: #25D366;
+}
+
+.btn-email {
+    background: #EA4335;
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .print-only {
+        display: block !important;
+    }
+
+    .card {
+        box-shadow: none;
+        padding: 0;
+    }
+
+    /* Add specific print layout styles here */
+}

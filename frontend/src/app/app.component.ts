@@ -8,7 +8,6 @@ import { Observable, of } from 'rxjs';
 import { switchMap, map, catchError, startWith } from 'rxjs/operators';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { LoaderComponent } from './components/loader/loader.component';
-import { ThemeService } from './services/theme.service';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
@@ -38,7 +37,6 @@ export class AppComponent implements OnInit {
     public auth: AuthService,
     public cartService: CartService,
     public wishlistService: WishlistService,
-    public themeService: ThemeService,
     private router: Router,
     private messageService: MessageService,
     private eRef: ElementRef
@@ -112,15 +110,6 @@ export class AppComponent implements OnInit {
   isAdmin(): boolean {
     const role = this.auth.getUserRole();
     return role === 'ROLE_ADMIN' || role === 'admin';
-  }
-
-  onThemeChange(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    if (select.value === 'dark') {
-      this.themeService.enableDarkMode();
-    } else {
-      this.themeService.disableDarkMode();
-    }
   }
 
   // Dropdown Logic

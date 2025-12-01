@@ -13,12 +13,14 @@ import { AdminAdvertisementComponent } from './advertisement/admin-advertisement
 import { HttpClient } from '@angular/common/http';
 import { OrderService } from '../../services/order.service';
 
+import { BillingComponent } from './billing/billing.component';
+
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TableModule, ButtonModule, InputTextModule, UserListComponent, AdminAdvertisementComponent]
+  imports: [CommonModule, FormsModule, TableModule, ButtonModule, InputTextModule, UserListComponent, AdminAdvertisementComponent, BillingComponent]
 })
 export class AdminComponent implements OnInit {
   activeTab: string = 'products';

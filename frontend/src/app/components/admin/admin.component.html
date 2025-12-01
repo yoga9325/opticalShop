@@ -1,6 +1,10 @@
 <div class="admin-container">
   <div class="admin-header">
-    <h2>Admin Dashboard</h2>
+    <h2>
+      <!-- <img src="assets/logo.jpg" alt="Logo" height="50" class="mr-2"
+        style="vertical-align: middle; mix-blend-mode: multiply;"> -->
+      Admin Dashboard
+    </h2>
     <div class="admin-nav">
       <button class="nav-btn" [class.active]="activeTab === 'products'" (click)="activeTab = 'products'">
         <i class="bi bi-box"></i> Products
@@ -16,6 +20,9 @@
       </button>
       <button class="nav-btn" [class.active]="activeTab === 'orders'" (click)="activeTab = 'orders'">
         <i class="bi bi-receipt"></i> Orders
+      </button>
+      <button class="nav-btn" [class.active]="activeTab === 'billing'" (click)="activeTab = 'billing'">
+        <i class="bi bi-cash-coin"></i> Billing
       </button>
       <button class="nav-btn" [class.active]="activeTab === 'messages'" (click)="activeTab = 'messages'">
         <i class="bi bi-envelope"></i> Messages
@@ -483,6 +490,11 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Billing Tab -->
+  <div *ngIf="activeTab === 'billing'" class="tab-content">
+    <app-billing></app-billing>
   </div>
 
   <!-- Messages Tab -->

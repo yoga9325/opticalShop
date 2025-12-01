@@ -25,6 +25,9 @@
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "node_modules/primeng/resources/themes/lara-light-blue/theme.css",
+              "node_modules/primeng/resources/primeng.min.css",
+              "node_modules/primeicons/primeicons.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -57,7 +60,6 @@
       }
     }
   },
-
   "cli": {
     "analytics": "5eb62616-86e0-4ee7-96e9-edceef62039e"
   }

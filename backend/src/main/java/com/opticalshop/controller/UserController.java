@@ -25,12 +25,17 @@ public class UserController {
     public ResponseEntity<?> me() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> u = userRepository.findByUsername(username);
-        if (u.isEmpty()) return ResponseEntity.notFound().build();
+        if (u.isEmpty())
+            return ResponseEntity.notFound().build();
         User user = u.get();
         UserDto d = new UserDto();
         d.setId(user.getId());
         d.setUsername(user.getUsername());
         d.setEmail(user.getEmail());
+        d.setMobileNumber(user.getMobileNumber());
+        d.setFirstName(user.getFirstName());
+        d.setLastName(user.getLastName());
+        d.setAddress(user.getAddress());
         d.setRoles(user.getRoles());
         return ResponseEntity.ok(d);
     }
@@ -39,9 +44,21 @@ public class UserController {
     public ResponseEntity<?> updateProfile(@RequestBody UserDto userDto) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<User> u = userRepository.findByUsername(username);
-        if (u.isEmpty()) return ResponseEntity.notFound().build();
+        if (u.isEmpty())
+            return ResponseEntity.notFound().build();
         User user = u.get();
-        user.setEmail(userDto.getEmail());
+
+        if (userDto.getEmail() != null)
+            user.setEmail(userDto.getEmail());
+        if (userDto.getMobileNumber() != null)
+            user.setMobileNumber(userDto.getMobileNumber());
+        if (userDto.getFirstName() != null)
+            user.setFirstName(userDto.getFirstName());
+        if (userDto.getLastName() != null)
+            user.setLastName(userDto.getLastName());
+        if (userDto.getAddress() != null)
+            user.setAddress(userDto.getAddress());
+
         userRepository.save(user);
         return ResponseEntity.ok(userDto);
     }

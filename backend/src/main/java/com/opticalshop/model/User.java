@@ -20,6 +20,12 @@ public class User {
 
     private String mobileNumber;
 
+    private String firstName;
+
+    private String lastName;
+
+    private String address;
+
     private boolean enabled = true;
 
     private String otp;
@@ -36,6 +42,10 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
+
+    private String refreshToken;
+
+    private java.time.LocalDateTime refreshTokenExpiry;
 
     // getters & setters
     public Long getId() {
@@ -108,5 +118,45 @@ public class User {
 
     public void setOtpExpiry(java.time.LocalDateTime otpExpiry) {
         this.otpExpiry = otpExpiry;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public java.time.LocalDateTime getRefreshTokenExpiry() {
+        return refreshTokenExpiry;
+    }
+
+    public void setRefreshTokenExpiry(java.time.LocalDateTime refreshTokenExpiry) {
+        this.refreshTokenExpiry = refreshTokenExpiry;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
