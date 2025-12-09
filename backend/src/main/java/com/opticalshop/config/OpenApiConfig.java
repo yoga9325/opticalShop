@@ -28,12 +28,15 @@ import io.swagger.v3.oas.annotations.servers.Server;
     ),
     servers = {
         @Server(
-            description = "Local Environment",
-            url = "http://localhost:8080"
-        ),
-        @Server(
-            description = "Production Environment",
-            url = "https://opticalshop.com"
+        //     description = "Local Environment",
+        //     url = "http://localhost:8080"
+        // ),
+        // @Server(
+        //     description = "Production Environment",
+        //     url = "https://opticalshop.com"
+
+              description = "Default Server URL",
+              url = "/"
         )
     },
     security = {
