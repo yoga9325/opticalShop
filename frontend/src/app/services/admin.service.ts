@@ -49,4 +49,12 @@ export class AdminService {
   blockUser(id: number): Observable<any> {
     return this.http.post(`${this.base}/users/${id}/block`, null);
   }
+
+  getDashboardStats(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/admin/dashboard-stats`);
+  }
+
+  exportSalesReport(): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/admin/reports/export`, { responseType: 'blob' });
+  }
 }

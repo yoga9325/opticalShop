@@ -1,0 +1,140 @@
+<div class="container-fluid p-4">
+  <!-- <p style="color: white">Debug: Dashboard Component Loaded</p> -->
+  <h2 class="mb-4">Admin Dashboard</h2>
+
+  <!-- KPI Cards -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card text-white bg-primary mb-3">
+        <div class="card-header">Total Revenue</div>
+        <div class="card-body">
+          <h3 class="card-title">{{ stats.totalRevenue | currency:'INR' }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-success mb-3">
+        <div class="card-header">Total Orders</div>
+        <div class="card-body">
+          <h3 class="card-title">{{ stats.totalOrders }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-warning mb-3">
+        <div class="card-header">Total Users</div>
+        <div class="card-body">
+          <h3 class="card-title">{{ stats.totalUsers }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">Sales by Category</div>
+        <div class="card-body">
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">Order Workflow Status</div>
+        <div class="card-body">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">Weekly Sales Trend</div>
+        <div class="card-body">
+          <canvas id="weeklyChart"></canvas>
+        </div>
+      </div>
+      <div class="card mt-4">
+        <div class="card-header">Monthly Revenue</div>
+        <div class="card-body">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Advanced Widgets -->
+  <div class="row">
+    <!-- Low Stock Alert -->
+    <div class="col-md-6 mb-4">
+      <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+          <i class="bi bi-exclamation-triangle"></i> Low Stock Alerts (< 5 items)
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-striped mb-0">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Stock</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of stats.lowStockProducts">
+                <td>{{p.name}}</td>
+                <td class="text-danger fw-bold">{{p.stockQuantity}}</td>
+                <td>{{p.price | currency:'INR'}}</td>
+              </tr>
+              <tr *ngIf="!stats.lowStockProducts?.length">
+                <td colspan="3" class="text-center">No low stock items.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Selling Products -->
+    <div class="col-md-6 mb-4">
+      <div class="card border-success">
+        <div class="card-header bg-success text-white">
+          <i class="bi bi-trophy"></i> Top Selling Products
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-striped mb-0">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Brand</th>
+                <th>Category</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of stats.topSellingProducts">
+                <td>{{p.name}}</td>
+                <td>{{p.brand}}</td>
+                <td>{{p.category}}</td>
+              </tr>
+              <tr *ngIf="!stats.topSellingProducts?.length">
+                <td colspan="3" class="text-center">No sales data yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="row mb-5">
+    <div class="col-12 text-end">
+      <button class="btn btn-outline-primary" (click)="downloadReport()">
+        <i class="bi bi-download"></i> Export Sales Report (CSV)
+      </button>
+    </div>
+  </div>
+
+</div>

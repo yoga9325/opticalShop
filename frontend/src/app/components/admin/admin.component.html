@@ -6,6 +6,9 @@
       Admin Dashboard
     </h2>
     <div class="admin-nav">
+      <button class="nav-btn" [class.active]="activeTab === 'dashboard'" (click)="activeTab = 'dashboard'">
+        <i class="bi bi-speedometer2"></i> Dashboard
+      </button>
       <button class="nav-btn" [class.active]="activeTab === 'products'" (click)="activeTab = 'products'">
         <i class="bi bi-box"></i> Products
       </button>
@@ -24,10 +27,18 @@
       <button class="nav-btn" [class.active]="activeTab === 'billing'" (click)="activeTab = 'billing'">
         <i class="bi bi-cash-coin"></i> Billing
       </button>
+      <button class="nav-btn" [class.active]="activeTab === 'prescriptions'" (click)="activeTab = 'prescriptions'">
+        <i class="bi bi-file-medical"></i> Prescriptions
+      </button>
       <button class="nav-btn" [class.active]="activeTab === 'messages'" (click)="activeTab = 'messages'">
         <i class="bi bi-envelope"></i> Messages
       </button>
     </div>
+  </div>
+
+  <!-- Prescriptions Tab -->
+  <div *ngIf="activeTab === 'prescriptions'" class="tab-content">
+    <app-prescription-list></app-prescription-list>
   </div>
 
   <!-- Products Tab -->
@@ -69,7 +80,7 @@
             <td>{{ product.name }}</td>
             <td>{{ product.brand }}</td>
             <td>{{ product.category }}</td>
-            <td>{{ product.price | currency }}</td>
+            <td>{{ product.price | currency : 'INR' : 'symbol' : '1.2-2' }}</td>
             <td>
               <button pButton type="button" pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
                 (click)="selectProduct(product)" title="Edit"></button>
@@ -362,6 +373,11 @@
     <app-user-list></app-user-list>
   </div>
 
+  <!-- Dashboard Tab -->
+  <div *ngIf="activeTab === 'dashboard'" class="tab-content">
+    <app-dashboard></app-dashboard>
+  </div>
+
   <!-- Advertisements Tab -->
   <div *ngIf="activeTab === 'advertisements'" class="tab-content">
     <app-admin-advertisement></app-admin-advertisement>
@@ -369,44 +385,163 @@
 
   <!-- Orders Tab -->
   <div *ngIf="activeTab === 'orders'" class="tab-content">
-    <div class="product-list">
-      <h3>Order Management</h3>
-      <p-table [value]="orders" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
-        [rowsPerPageOptions]="[10, 20, 50]" responsiveLayout="scroll">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Order ID</th>
-            <th>Customer</th>
-            <th>Date</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Payment</th>
-            <th>Actions</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-order>
-          <tr>
-            <td>#{{order.id}}</td>
-            <td>{{order.user?.username || 'N/A'}}</td>
-            <td>{{order.orderDate | date:'short'}}</td>
-            <td>₹{{order.totalAmount}}</td>
-            <td>
-              <span class="status-badge" [ngClass]="getStatusClass(order.status)">{{order.status}}</span>
-            </td>
-            <td>
-              <span class="status-badge"
-                [ngClass]="getPaymentStatusClass(order.paymentStatus)">{{order.paymentStatus}}</span>
-            </td>
-            <td>
-              <p-button label="View" icon="pi pi-eye" styleClass="btn-view" [text]="true"
-                (click)="viewOrder(order)"></p-button>
-              <p-button label="Update" icon="pi pi-pencil" styleClass="btn-update" [text]="false"
-                (click)="openUpdateStatusModal(order)"></p-button>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Order Workflow </h3>
+        <button pButton icon="pi pi-refresh" label="Refresh" class="p-button-outlined" (click)="loadOrders()"></button>
+      </div>
+
+      <div class="kanban-board">
+        <!-- Pending Column -->
+        <div class="kanban-column pending">
+          <div class="column-header">
+            <span class="badge bg-warning text-dark">PENDING</span>
+            <span class="count">{{ordersPending.length}}</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="card mb-2" *ngFor="let order of ordersPending">
+              <div class="card-body p-3">
+                <h5 class="card-title d-flex justify-content-between">
+                  <span>#{{order.id}}</span>
+                  <small>{{order.totalAmount | currency:'INR'}}</small>
+                </h5>
+                <p class="card-text small mb-1">{{order.user?.username}}</p>
+                <p class="card-text small text-muted">{{order.orderDate | date:'shortDate'}}</p>
+                <div class="d-flex gap-2 mt-2">
+                  <button class="btn btn-sm btn-info flex-grow-1" (click)="moveOrder(order, 'PRESCRIPTION_VERIFIED')">Verify Rx</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="moveOrder(order, 'CANCELLED')"><i class="bi bi-x"></i></button>
+                </div>
+                <button class="btn btn-sm btn-link w-100 mt-1" (click)="viewOrder(order)">View Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prescription Verified Column -->
+        <div class="kanban-column prescription-verified">
+          <div class="column-header">
+            <span class="badge bg-info text-dark">RX VERIFIED</span>
+            <span class="count">{{ordersPrescriptionVerified.length}}</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="card mb-2" *ngFor="let order of ordersPrescriptionVerified">
+              <div class="card-body p-3">
+                <h5 class="card-title d-flex justify-content-between">
+                  <span>#{{order.id}}</span>
+                  <small>{{order.totalAmount | currency:'INR'}}</small>
+                </h5>
+                <p class="card-text small mb-1">{{order.user?.username}}</p>
+                <button class="btn btn-sm btn-primary w-100 mt-2" (click)="moveOrder(order, 'LAB_PROCESSING')">Send to Lab</button>
+                <button class="btn btn-sm btn-link w-100 mt-1" (click)="viewOrder(order)">View Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lab Processing Column -->
+        <div class="kanban-column lab-processing">
+          <div class="column-header">
+            <span class="badge bg-primary">LAB</span>
+            <span class="count">{{ordersLabProcessing.length}}</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="card mb-2" *ngFor="let order of ordersLabProcessing">
+              <div class="card-body p-3">
+                <h5 class="card-title d-flex justify-content-between">
+                  <span>#{{order.id}}</span>
+                  <small>{{order.totalAmount | currency:'INR'}}</small>
+                </h5>
+                <p class="card-text small mb-1">{{order.user?.username}}</p>
+                <button class="btn btn-sm btn-warning w-100 mt-2" (click)="moveOrder(order, 'QUALITY_CHECK')">Complete Lab</button>
+                <button class="btn btn-sm btn-link w-100 mt-1" (click)="viewOrder(order)">View Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quality Check Column -->
+        <div class="kanban-column quality-check">
+          <div class="column-header">
+            <span class="badge bg-secondary">QC CHECK</span>
+            <span class="count">{{ordersQualityCheck.length}}</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="card mb-2" *ngFor="let order of ordersQualityCheck">
+              <div class="card-body p-3">
+                <h5 class="card-title d-flex justify-content-between">
+                  <span>#{{order.id}}</span>
+                  <small>{{order.totalAmount | currency:'INR'}}</small>
+                </h5>
+                <p class="card-text small mb-1">{{order.user?.username}}</p>
+                <button class="btn btn-sm btn-success w-100 mt-2" (click)="moveOrder(order, 'SHIPPED')">Pass QC & Ship</button>
+                <button class="btn btn-sm btn-link w-100 mt-1" (click)="viewOrder(order)">View Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipped Column -->
+        <div class="kanban-column shipped">
+          <div class="column-header">
+            <span class="badge bg-dark">SHIPPED</span>
+            <span class="count">{{ordersShipped.length}}</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="card mb-2" *ngFor="let order of ordersShipped">
+              <div class="card-body p-3">
+                <h5 class="card-title d-flex justify-content-between">
+                  <span>#{{order.id}}</span>
+                  <small>{{order.totalAmount | currency:'INR'}}</small>
+                </h5>
+                <p class="card-text small mb-1">{{order.user?.username}}</p>
+                <button class="btn btn-sm btn-success w-100 mt-2" (click)="moveOrder(order, 'DELIVERED')">Mark Delivered</button>
+                <button class="btn btn-sm btn-link w-100 mt-1" (click)="viewOrder(order)">View Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivered Column -->
+        <div class="kanban-column delivered">
+          <div class="column-header">
+            <span class="badge bg-success">DELIVERED</span>
+            <span class="count">{{ordersDelivered.length}}</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="card mb-2" *ngFor="let order of ordersDelivered">
+              <div class="card-body p-3">
+                <h5 class="card-title d-flex justify-content-between">
+                  <span>#{{order.id}}</span>
+                  <small>{{order.totalAmount | currency:'INR'}}</small>
+                </h5>
+                <p class="card-text small mb-1">{{order.user?.username}}</p>
+                <p class="card-text small text-muted">Completed</p>
+                <button class="btn btn-sm btn-link w-100 mt-1" (click)="viewOrder(order)">View Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+         <!-- Cancelled Column -->
+         <div class="kanban-column cancelled">
+          <div class="column-header">
+            <span class="badge bg-secondary">CANCELLED</span>
+            <span class="count">{{ordersCancelled.length}}</span>
+          </div>
+          <div class="kanban-cards">
+            <div class="card mb-2" *ngFor="let order of ordersCancelled">
+              <div class="card-body p-3">
+                <h5 class="card-title d-flex justify-content-between">
+                  <span>#{{order.id}}</span>
+                  <small>{{order.totalAmount | currency:'INR'}}</small>
+                </h5>
+                <p class="card-text small mb-1">{{order.user?.username}}</p>
+                <button class="btn btn-sm btn-link w-100 mt-1" (click)="viewOrder(order)">View Details</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
 
     <!-- Order Details Modal -->
     <div class="modal-overlay" *ngIf="selectedOrderForView" (click)="closeOrderView()">
@@ -435,7 +570,7 @@
                   <span class="item-name">{{item.product?.name}}</span>
                   <span class="item-meta">Qty: {{item.quantity}}</span>
                 </div>
-                <span class="item-price">₹{{item.unitPrice}}</span>
+                <span class="item-price">{{item.unitPrice | currency:'INR'}}</span>
               </div>
             </div>
           </div>
@@ -443,7 +578,7 @@
           <div class="detail-section total-section">
             <div class="total-row">
               <span>Total Amount:</span>
-              <span class="total-amount">₹{{selectedOrderForView.totalAmount}}</span>
+              <span class="total-amount">{{selectedOrderForView.totalAmount | currency:'INR'}}</span>
             </div>
             <div class="status-row">
               <span class="status-badge" [ngClass]="getStatusClass(selectedOrderForView.status)">
@@ -454,39 +589,9 @@
               </span>
             </div>
           </div>
-
-          <!-- Debug Info -->
-          <!-- <div class="detail-section" style="margin-top: 1rem; background: #eee; padding: 1rem; border-radius: 8px;">
-            <h4>Debug Data</h4>
-            <pre style="font-size: 0.7rem; overflow: auto; max-height: 200px;">{{selectedOrderForView | json}}</pre>
-          </div> -->
         </div>
         <div class="modal-footer">
           <button class="btn-secondary" (click)="closeOrderView()">Close</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Update Status Modal -->
-    <div class="modal-overlay" *ngIf="selectedOrderForUpdate" (click)="closeUpdateStatusModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()" style="max-width: 400px;">
-        <div class="modal-header">
-          <h3>Update Order Status</h3>
-          <button class="close-btn" (click)="closeUpdateStatusModal()">&times;</button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="statusSelect"
-              style="display: block; margin-bottom: 0.5rem; color: #64748b; font-weight: 500;">Select New Status</label>
-            <select id="statusSelect" [(ngModel)]="newStatus"
-              style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1rem;">
-              <option *ngFor="let status of statusOptions" [value]="status">{{status}}</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-secondary" (click)="closeUpdateStatusModal()" style="margin-right: 0.5rem;">Cancel</button>
-          <button class="btn-update" (click)="saveOrderStatus()">Update Status</button>
         </div>
       </div>
     </div>
@@ -525,4 +630,27 @@
     </div>
   </div>
 
+</div>
+
+<!-- Global Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showConfirmationModal" (click)="closeConfirmationModal()">
+  <div class="modal-content confirmation-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Confirm Action</h3>
+      <button class="close-btn" (click)="closeConfirmationModal()">&times;</button>
+    </div>
+    <div class="modal-body text-center p-4">
+      <div class="mb-3">
+        <i class="bi bi-exclamation-circle text-warning" style="font-size: 3rem;"></i>
+      </div>
+      <p class="mb-4" style="font-size: 1.1rem;">
+        Are you sure you want to move <strong>Order #{{pendingOrderAction?.id}}</strong> to <br>
+        <span class="badge bg-primary mt-2" style="font-size: 1rem;">{{getFormattedStatus(pendingNewStatus)}}</span>?
+      </p>
+      <div class="d-flex justify-content-center gap-3">
+        <button class="btn-secondary" (click)="closeConfirmationModal()">Cancel</button>
+        <button class="btn-update" (click)="confirmMoveOrder()">Yes, Move Order</button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Product } from '../../models/product';
 import { Discount } from '../../models/discount';
 import { ProductService } from '../../services/product.service';
@@ -14,16 +14,18 @@ import { HttpClient } from '@angular/common/http';
 import { OrderService } from '../../services/order.service';
 
 import { BillingComponent } from './billing/billing.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { PrescriptionListComponent } from './prescription-list/prescription-list.component';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TableModule, ButtonModule, InputTextModule, UserListComponent, AdminAdvertisementComponent, BillingComponent]
+  imports: [CommonModule, FormsModule, TableModule, ButtonModule, InputTextModule, UserListComponent, AdminAdvertisementComponent, BillingComponent, DashboardComponent, PrescriptionListComponent]
 })
 export class AdminComponent implements OnInit {
-  activeTab: string = 'products';
+  activeTab: string = 'dashboard';
   products: Product[] = [];
   discounts: Discount[] = [];
   messages: any[] = []; // Added messages property
@@ -50,7 +52,13 @@ export class AdminComponent implements OnInit {
 
   private apiUrl = 'http://localhost:8080/api'; // Added apiUrl for loadMessages
 
-  constructor(private productService: ProductService, private discountService: DiscountService, private orderService: OrderService, private http: HttpClient) { } // Modified constructor to include HttpClient
+  constructor(
+    private productService: ProductService, 
+    private discountService: DiscountService, 
+    private orderService: OrderService, 
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.loadProducts();
@@ -193,10 +201,60 @@ export class AdminComponent implements OnInit {
     }
   }
 
+  // Kanban Data Structures
+  ordersPending: any[] = [];
+  ordersPrescriptionVerified: any[] = [];
+  ordersLabProcessing: any[] = [];
+  ordersQualityCheck: any[] = [];
+  ordersShipped: any[] = [];
+  ordersDelivered: any[] = [];
+  ordersCancelled: any[] = [];
+
   loadOrders(): void {
     this.orderService.getAllOrders().subscribe(orders => {
       this.orders = orders;
+      // Categorize for Kanban
+      this.ordersPending = orders.filter((o: any) => o.status === 'PENDING');
+      this.ordersPrescriptionVerified = orders.filter((o: any) => o.status === 'PRESCRIPTION_VERIFIED');
+      this.ordersLabProcessing = orders.filter((o: any) => o.status === 'LAB_PROCESSING');
+      this.ordersQualityCheck = orders.filter((o: any) => o.status === 'QUALITY_CHECK');
+      this.ordersShipped = orders.filter((o: any) => o.status === 'SHIPPED');
+      this.ordersDelivered = orders.filter((o: any) => o.status === 'DELIVERED');
+      this.ordersCancelled = orders.filter((o: any) => o.status === 'CANCELLED');
     });
+  }
+
+  // Kanban Actions
+  pendingOrderAction: any = null;
+  pendingNewStatus: string = '';
+  showConfirmationModal = false;
+
+  moveOrder(order: any, newStatus: string): void {
+    console.log('Moving order', order.id, 'to', newStatus);
+    this.pendingOrderAction = order;
+    this.pendingNewStatus = newStatus;
+    this.showConfirmationModal = true;
+    this.cdr.detectChanges();
+  }
+
+  confirmMoveOrder(): void {
+    if (this.pendingOrderAction && this.pendingNewStatus) {
+      this.orderService.updateOrderStatus(this.pendingOrderAction.id, this.pendingNewStatus).subscribe(() => {
+        this.loadOrders();
+        this.closeConfirmationModal();
+      });
+    }
+  }
+
+  closeConfirmationModal(): void {
+    this.showConfirmationModal = false;
+    this.pendingOrderAction = null;
+    this.pendingNewStatus = '';
+    this.cdr.detectChanges();
+  }
+
+  getFormattedStatus(status: string): string {
+    return status ? status.replace(/_/g, ' ') : '';
   }
 
   selectedOrderForView: any = null;

@@ -40,13 +40,26 @@ public class CartServiceImpl implements CartService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
+        if (quantity <= 0) {
+           throw new RuntimeException("Quantity must be greater than 0");
+        }
+
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst();
 
+        int newQuantity = quantity;
+        if (existingItem.isPresent()) {
+            newQuantity += existingItem.get().getQuantity();
+        }
+
+        if (newQuantity > product.getStockQuantity()) {
+            throw new RuntimeException("This Item Out Of Stock (" + product.getStockQuantity() + ")");
+        }
+
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
-            item.setQuantity(item.getQuantity() + quantity);
+            item.setQuantity(newQuantity);
         } else {
             CartItem newItem = new CartItem();
             newItem.setCart(cart);
@@ -92,6 +105,7 @@ public class CartServiceImpl implements CartService {
         dto.setProductName(cartItem.getProduct().getName());
         dto.setQuantity(cartItem.getQuantity());
         dto.setPrice(cartItem.getProduct().getPrice().doubleValue());
+        dto.setImageUrl(cartItem.getProduct().getImageUrl());
         return dto;
     }
 }

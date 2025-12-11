@@ -84,8 +84,15 @@ export class ProductDetailComponent implements OnInit {
       this.auth.triggerLoginModal();
       return;
     }
-    this.cart.addToCart(this.product.id, this.qty).subscribe(() => {
-      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product added to cart!' });
+    this.cart.addToCart(this.product.id, this.qty).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product added to cart!' });
+      },
+      error: (err) => {
+        console.error('Error adding to cart:', err);
+        const errorMessage = err.error?.message || 'Failed to add product to cart';
+        this.messageService.add({ severity: 'error', summary: 'Stock Error', detail: errorMessage });
+      }
     });
   }
 

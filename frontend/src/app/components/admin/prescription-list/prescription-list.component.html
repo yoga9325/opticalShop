@@ -1,0 +1,34 @@
+<div class="container-fluid p-4">
+  <h3 class="mb-4 text-white">Prescription Management</h3>
+  <div class="card">
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Exam Date</th>
+            <th>Doctor</th>
+            <th>Sphere (L/R)</th>
+            <th>Cylinder (L/R)</th>
+            <th>Axis (L/R)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of prescriptions">
+            <td>{{p.id}}</td>
+            <td>{{p.user?.username || 'N/A'}}</td>
+            <td>{{p.examDate | date}}</td>
+            <td>{{p.doctorName}}</td>
+            <td>{{p.sphLeft}} / {{p.sphRight}}</td>
+            <td>{{p.cylLeft}} / {{p.cylRight}}</td>
+            <td>{{p.axisLeft}} / {{p.axisRight}}</td>
+          </tr>
+          <tr *ngIf="prescriptions.length === 0">
+            <td colspan="7" class="text-center py-4">No prescriptions found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
