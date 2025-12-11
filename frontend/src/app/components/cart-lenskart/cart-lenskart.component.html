@@ -19,7 +19,9 @@
             <tr *ngFor="let item of cartItems">
               <td class="product-cell">
                 <img [src]="item.imageUrl || item.image" [alt]="item.productName" class="product-thumb">
-                <span>{{ item.productName }}</span>
+                <a [routerLink]="['/product', item.productId ]" style="text-decoration: none; color: inherit;">
+                  <span>{{ item.productName }}</span>
+                </a>
               </td>
               <td>₹{{ item.price }}</td>
               <td>
