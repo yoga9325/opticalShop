@@ -29,11 +29,12 @@ body {
 }
 
 /* App container */
-.app-container {
-  /* max-width: var(--container-width);
+/* App container */
+/* .app-container {
+  max-width: var(--container-width);
   margin: 0 auto;
-  padding: 0 1rem; */
-}
+  padding: 0 1rem;
+} */
 
 /* Utility classes */
 .text-muted {
@@ -67,6 +68,21 @@ body {
 /* Responsive styles */
 @media (max-width: 768px) {
   .app-container {
-    padding: 0 0.75rem;
+    padding: 0 1rem;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  
+  h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .container, .container-fluid {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
 }

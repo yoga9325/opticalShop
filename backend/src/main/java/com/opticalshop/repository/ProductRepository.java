@@ -26,4 +26,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByFrameType(String frameType, Pageable pageable);
     Page<Product> findByFrameShape(String frameShape, Pageable pageable);
     Page<Product> findByColor(String color, Pageable pageable);
+
+    // Dashboard queries
+    List<Product> findByStockQuantityLessThan(int quantity);
 }

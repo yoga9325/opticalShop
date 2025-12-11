@@ -24,6 +24,7 @@ import { CheckoutLenskartComponent } from './components/checkout-lenskart/checko
 import { PaymentLenskartComponent } from './components/payment-lenskart/payment-lenskart.component';
 import { OrderHistoryLenskartComponent } from './components/order-history-lenskart/order-history-lenskart.component';
 import { AdminAdvertisementComponent } from './components/admin/advertisement/admin-advertisement.component';
+import { DashboardComponent } from './components/admin/dashboard/dashboard.component';
 
 const routes: Routes = [
   { path: '', component: LenskartHomeComponent },
@@ -45,6 +46,7 @@ const routes: Routes = [
   { path: 'admin/users', component: UserListComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'admin/products', component: AdminProductListComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'admin/products/upload', component: ProductUploadComponent, canActivate: [AuthGuard, AdminGuard] },
+  { path: 'admin/dashboard', component: DashboardComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'admin/advertisements', component: AdminAdvertisementComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'lenskart-home', component: LenskartHomeComponent },
   // Legacy routes

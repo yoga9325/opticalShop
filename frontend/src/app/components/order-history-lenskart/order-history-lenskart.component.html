@@ -28,71 +28,84 @@
       </div>
 
       <div *ngIf="selectedOrder?.id === order.id" class="order-details">
-        <!-- Items Section -->
-        <div class="details-section">
-          <h4>Order Items</h4>
-          <div class="items-table">
-            <div class="item-row" *ngFor="let item of order.orderItems">
-              <div class="item-info">
-                <img *ngIf="item.product?.imageUrl" [src]="item.product.imageUrl" [alt]="item.product.name"
-                  class="item-image">
-                <div class="item-details">
-                  <p class="item-name">{{ item.product.name }}</p>
-                  <p class="item-qty">Qty: {{ item.quantity }}</p>
+        <div class="details-content">
+          <!-- Items Section -->
+          <div class="details-section">
+            <h4>Order Items</h4>
+            <div class="items-table">
+              <div class="item-row" *ngFor="let item of order.orderItems">
+                <div class="item-info">
+                  <img *ngIf="item.product?.imageUrl" [src]="item.product.imageUrl" [alt]="item.product.name"
+                    class="item-image">
+                  <div class="item-details">
+                    <p class="item-name">{{ item.product.name }}</p>
+                    <p class="item-qty">Qty: {{ item.quantity }}</p>
+                  </div>
+                </div>
+                <div class="item-price">
+                  <p>₹{{ item.unitPrice | number:'1.0-0' }}</p>
                 </div>
               </div>
-              <div class="item-price">
-                <p>₹{{ item.unitPrice | number:'1.0-0' }}</p>
+            </div>
+          </div>
+
+          <div class="info-grid">
+            <!-- Shipping Section -->
+            <div class="details-section">
+              <h4>Shipping Address</h4>
+              <div class="address-info">
+                <p><strong>{{ order.user?.username || 'User' }}</strong></p>
+                <p>{{ order.shippingAddress }}</p>
+                <p>Contact: {{ order.user?.email }}</p>
+              </div>
+            </div>
+
+            <!-- Price Breakdown Section -->
+            <div class="details-section">
+              <h4>Price Summary</h4>
+              <div class="price-breakdown">
+                <div class="breakdown-row">
+                  <span>Subtotal</span>
+                  <span>₹{{ order.totalAmount | number:'1.0-0' }}</span>
+                </div>
+                <div class="breakdown-row">
+                  <span>Shipping</span>
+                  <span>Free</span>
+                </div>
+                <div class="breakdown-row total">
+                  <span>Total Paid</span>
+                  <span>₹{{ order.totalAmount | number:'1.0-0' }}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Shipping Section -->
-        <div class="details-section">
-          <h4>Shipping Address</h4>
-          <div class="address-info">
-            <p>{{ order.shippingAddress }}</p>
+          <!-- Payment & Tracking -->
+          <div class="info-grid" style="margin-top: -1rem;">
+             <div class="details-section">
+                <h4>Payment Method</h4>
+                <div class="address-info">
+                  <p>{{ order.paymentMethod || 'Online Payment' }}</p>
+                </div>
+             </div>
+             <div class="details-section">
+                <h4>Tracking Details</h4>
+                <div class="address-info">
+                   <p [class.text-muted]="!order.trackingNumber">
+                     {{ order.trackingNumber || 'Tracking not available yet' }}
+                   </p>
+                </div>
+             </div>
           </div>
-        </div>
 
-        <!-- Price Breakdown Section -->
-        <div class="details-section">
-          <h4>Price Breakdown</h4>
-          <div class="price-breakdown">
-            <div class="breakdown-row">
-              <span>Subtotal:</span>
-              <span>₹{{ order.totalAmount | number:'1.0-0' }}</span>
-            </div>
-            <div class="breakdown-row total">
-              <span>Total:</span>
-              <span>₹{{ order.totalAmount | number:'1.0-0' }}</span>
-            </div>
+          <div class="details-section actions">
+            <button class="btn btn-secondary" *ngIf="order.status !== 'cancelled' && order.status !== 'delivered'" (click)="trackOrder(order); $event.stopPropagation()">
+              <i class="bi bi-truck"></i> Track Order
+            </button>
+            <button class="btn btn-danger" *ngIf="order.status === 'pending'" (click)="cancelOrder(order.id)">
+              <i class="bi bi-x-circle"></i> Cancel Order
+            </button>
           </div>
-        </div>
-
-        <!-- Payment & Tracking -->
-        <div class="details-section">
-          <div class="section-row">
-            <div>
-              <h4>Payment Method</h4>
-              <p>{{ order.paymentMethod }}</p>
-            </div>
-            <div>
-              <h4>Tracking Number</h4>
-              <p>{{ order.trackingNumber || 'Not available yet' }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="details-section actions">
-          <button class="btn btn-secondary" *ngIf="order.status !== 'cancelled' && order.status !== 'delivered'">
-            Track Order
-          </button>
-          <button class="btn btn-danger" *ngIf="order.status === 'pending'" (click)="cancelOrder(order.id)">
-            Cancel Order
-          </button>
         </div>
       </div>
     </div>
@@ -103,5 +116,65 @@
     <button class="btn btn-primary" routerLink="/products">
       Start Shopping
     </button>
+  </div>
+
+  <!-- Tracking Modal -->
+  <div *ngIf="showTrackingModal" class="modal-overlay" (click)="closeTrackingModal()">
+    <div class="modal-content tracking-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Track Order #{{ selectedTrackingOrder?.id }}</h2>
+        <button class="close-btn" (click)="closeTrackingModal()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="tracking-stepper">
+          <!-- Step 1: Placed -->
+          <div class="step" [class.completed]="currentTrackingStep >= 1" [class.active]="currentTrackingStep === 1">
+            <div class="step-icon">
+              <i class="bi bi-clipboard-check"></i>
+            </div>
+            <div class="step-label">Order Placed</div>
+            <div class="step-date">{{ formatDate(selectedTrackingOrder?.date || selectedTrackingOrder?.createdAt) }}</div>
+          </div>
+          
+          <div class="step-line" [class.completed]="currentTrackingStep >= 2"></div>
+
+          <!-- Step 2: Shipped -->
+          <div class="step" [class.completed]="currentTrackingStep >= 2" [class.active]="currentTrackingStep === 2">
+            <div class="step-icon">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="step-label">Shipped</div>
+            <div class="step-desc" *ngIf="currentTrackingStep >= 2">via FedEx</div>
+          </div>
+
+          <div class="step-line" [class.completed]="currentTrackingStep >= 3"></div>
+
+          <!-- Step 3: Out for Delivery -->
+          <div class="step" [class.completed]="currentTrackingStep >= 3" [class.active]="currentTrackingStep === 3">
+            <div class="step-icon">
+              <i class="bi bi-truck"></i>
+            </div>
+            <div class="step-label">Out for Delivery</div>
+            <div class="step-desc" *ngIf="currentTrackingStep >= 3">Arriving today</div>
+          </div>
+
+          <div class="step-line" [class.completed]="currentTrackingStep >= 4"></div>
+
+          <!-- Step 4: Delivered -->
+          <div class="step" [class.completed]="currentTrackingStep >= 4" [class.active]="currentTrackingStep === 4">
+            <div class="step-icon">
+              <i class="bi bi-house-door"></i>
+            </div>
+            <div class="step-label">Delivered</div>
+          </div>
+        </div>
+
+        <div class="tracking-info">
+          <p><strong>Tracking ID:</strong> {{ selectedTrackingOrder?.trackingNumber || 'PENDING' }}</p>
+          <p><strong>Expected Delivery:</strong> {{ getDeliveryDate() }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

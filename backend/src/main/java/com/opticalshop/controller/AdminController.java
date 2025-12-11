@@ -23,7 +23,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,6 +38,8 @@ public class AdminController {
 
     private final UserRepository userRepository;
     private final com.opticalshop.repository.OrderRepository orderRepository;
+    private final com.opticalshop.repository.ProductRepository productRepository;
+    private final com.opticalshop.repository.PrescriptionRepository prescriptionRepository;
 
     @PostMapping("/users")
     @Operation(summary = "List all users with pagination", description = "Retrieves a paginated list of all users in the system with their details including ID, username, email, and roles. Requires ADMIN role.")
@@ -127,5 +131,96 @@ public class AdminController {
         d.setEmail(u.getEmail());
         d.setRoles(u.getRoles());
         return d;
+    }
+    @GetMapping("/dashboard-stats")
+    @Operation(summary = "Get dashboard statistics", description = "Retrieves aggregated statistics for the admin dashboard including revenue and sales data.")
+    public ResponseEntity<com.opticalshop.dto.DashboardStatsDto> getDashboardStats() {
+        List<com.opticalshop.model.Order> allOrders = orderRepository.findAll();
+        long totalUsers = userRepository.count();
+
+        // Filter valid orders (e.g., ignore cancelled)
+        List<com.opticalshop.model.Order> validOrders = allOrders.stream()
+                .filter(o -> !"CANCELLED".equalsIgnoreCase(o.getStatus()))
+                .collect(Collectors.toList());
+
+        double totalRevenue = validOrders.stream()
+                .map(o -> o.getTotalAmount() != null ? o.getTotalAmount().doubleValue() : 0.0)
+                .reduce(0.0, Double::sum);
+
+        // Monthly Sales (Last 12 months logic could be added, here taking all time for simplicity as per MVP)
+        Map<String, Double> monthlySales = validOrders.stream()
+                .filter(o -> o.getOrderDate() != null)
+                .collect(Collectors.groupingBy(
+                        o -> o.getOrderDate().getMonth().toString() + "-" + o.getOrderDate().getYear(),
+                        Collectors.summingDouble(o -> o.getTotalAmount() != null ? o.getTotalAmount().doubleValue() : 0.0)
+                ));
+
+        // Sales by Category
+        Map<String, Double> salesByCategory = validOrders.stream()
+                .flatMap(o -> o.getOrderItems().stream())
+                .filter(i -> i.getProduct() != null && i.getProduct().getCategory() != null)
+                .collect(Collectors.groupingBy(
+                        i -> i.getProduct().getCategory(),
+                        Collectors.summingDouble(i -> i.getUnitPrice() != null ? i.getUnitPrice().doubleValue() * i.getQuantity() : 0.0)
+                ));
+
+        // Weekly Sales (Trend by Day Access Last 3 Months)
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(3);
+        Map<String, Double> weeklySales = validOrders.stream()
+                .filter(o -> o.getOrderDate() != null && o.getOrderDate().isAfter(threeMonthsAgo))
+                .collect(Collectors.groupingBy(
+                        o -> o.getOrderDate().getDayOfWeek().toString(),
+                        Collectors.summingDouble(o -> o.getTotalAmount() != null ? o.getTotalAmount().doubleValue() : 0.0)
+                ));
+
+        // New Logic
+        List<Product> lowStock = productRepository.findByStockQuantityLessThan(5); // Alert if < 5
+        Map<String, Long> ordersByStatus = allOrders.stream()
+            .collect(Collectors.groupingBy(o -> o.getStatus() != null ? o.getStatus() : "UNKNOWN", Collectors.counting()));
+        List<Product> topSelling = orderRepository.findTopSellingProducts(PageRequest.of(0, 5));
+
+        com.opticalshop.dto.DashboardStatsDto stats = com.opticalshop.dto.DashboardStatsDto.builder()
+                .totalRevenue(totalRevenue)
+                .totalOrders((long) allOrders.size()) // Show all orders count
+                .totalUsers(totalUsers)
+                .monthlySales(monthlySales)
+                .weeklySales(weeklySales)
+                .salesByCategory(salesByCategory)
+                .lowStockProducts(lowStock)
+                .ordersByStatus(ordersByStatus)
+                .topSellingProducts(topSelling)
+                .build();
+
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/prescriptions")
+    @Operation(summary = "Get all prescriptions", description = "Retrieves all user prescriptions.")
+    public ResponseEntity<List<com.opticalshop.model.Prescription>> getAllPrescriptions() {
+        return ResponseEntity.ok(prescriptionRepository.findAll());
+    }
+
+    @GetMapping("/reports/export")
+    @Operation(summary = "Export sales report", description = "Downloads a CSV file of all orders.")
+    public ResponseEntity<org.springframework.core.io.Resource> exportReport() {
+        List<com.opticalshop.model.Order> orders = orderRepository.findAll();
+        StringBuilder csv = new StringBuilder("Order ID,Date,User,Status,Total Amount,Items\n");
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        for (com.opticalshop.model.Order order : orders) {
+            csv.append(order.getId()).append(",");
+            csv.append(order.getOrderDate() != null ? order.getOrderDate().format(formatter) : "N/A").append(",");
+            csv.append(order.getUser() != null ? order.getUser().getUsername() : "N/A").append(",");
+            csv.append(order.getStatus()).append(",");
+            csv.append(order.getTotalAmount()).append(",");
+            csv.append(order.getOrderItems().size()).append("\n");
+        }
+
+        org.springframework.core.io.ByteArrayResource resource = new org.springframework.core.io.ByteArrayResource(csv.toString().getBytes());
+
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=sales_report.csv")
+                .contentType(org.springframework.http.MediaType.parseMediaType("text/xlsx"))
+                .body(resource);
     }
 }
