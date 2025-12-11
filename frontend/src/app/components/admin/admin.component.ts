@@ -16,6 +16,7 @@ import { OrderService } from '../../services/order.service';
 import { BillingComponent } from './billing/billing.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PrescriptionListComponent } from './prescription-list/prescription-list.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-admin',
@@ -50,7 +51,7 @@ export class AdminComponent implements OnInit {
   selectedDiscount: any = null;
   orders: any[] = []; // Kept orders property as it's used later in the file
 
-  private apiUrl = 'http://localhost:8080/api'; // Added apiUrl for loadMessages
+   private apiUrl = `${environment.apiUrl}`; // Added apiUrl for loadMessages
 
   constructor(
     private productService: ProductService, 
