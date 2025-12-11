@@ -38,7 +38,9 @@
                   <img *ngIf="item.product?.imageUrl" [src]="item.product.imageUrl" [alt]="item.product.name"
                     class="item-image">
                   <div class="item-details">
-                    <p class="item-name">{{ item.product.name }}</p>
+                    <a [routerLink]="['/product', item.product.id || item.product._id]" style="text-decoration: none; color: inherit;">
+                      <p class="item-name">{{ item.product.name }}</p>
+                    </a>
                     <p class="item-qty">Qty: {{ item.quantity }}</p>
                   </div>
                 </div>
