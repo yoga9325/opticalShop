@@ -10,6 +10,7 @@ import { AuthModalComponent } from './components/auth-modal/auth-modal.component
 import { LoaderComponent } from './components/loader/loader.component';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { FooterComponent } from './components/footer/footer.component';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,8 @@ import { MessageService } from 'primeng/api';
     RouterOutlet,
     AuthModalComponent,
     LoaderComponent,
-    ToastModule
+    ToastModule,
+    FooterComponent
   ],
   providers: [MessageService]
 })

@@ -34,6 +34,9 @@ public class ProductRatingController {
 
         Long productId = Long.valueOf(request.get("productId").toString());
         Integer rating = Integer.valueOf(request.get("rating").toString());
+        String reviewMessage = (String) request.get("reviewMessage");
+        java.util.List<String> imageUrls = (java.util.List<String>) request.get("imageUrls");
+
 
         Long userId = getUserIdFromAuthentication(authentication);
         if (userId == null) {
@@ -41,11 +44,16 @@ public class ProductRatingController {
         }
 
         try {
-            ProductRating savedRating = ratingService.rateProduct(productId, userId, rating);
+            ProductRating savedRating = ratingService.rateProduct(productId, userId, rating, reviewMessage, imageUrls);
             return ResponseEntity.ok(savedRating);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/product/{productId}/reviews")
+    public ResponseEntity<java.util.List<ProductRating>> getProductReviews(@PathVariable Long productId) {
+        return ResponseEntity.ok(ratingService.getReviewsForProduct(productId));
     }
 
     @GetMapping("/product/{productId}")

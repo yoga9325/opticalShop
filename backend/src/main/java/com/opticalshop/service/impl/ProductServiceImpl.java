@@ -16,12 +16,19 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private com.opticalshop.repository.ProductRatingRepository ratingRepository;
+
     @Override
     public Page<Product> listAll(String q, Pageable pageable) {
         if (q == null || q.isBlank()) {
-            return productRepository.findAll(pageable);
+            Page<Product> products = productRepository.findAll(pageable);
+            products.forEach(this::populateProductRating);
+            return products;
         }
-        return productRepository.search(q, pageable);
+        Page<Product> products = productRepository.search(q, pageable);
+        products.forEach(this::populateProductRating);
+        return products;
     }
 
     @Override
@@ -36,6 +43,7 @@ public class ProductServiceImpl implements ProductService {
 
         // Use filter query
         Page<Product> filteredProducts = productRepository.findByFilters(gender, frameType, frameShape, color, pageable);
+        filteredProducts.forEach(this::populateProductRating);
 
         // If search query is provided, we need to filter further (since the filter query doesn't include search)
         if (q != null && !q.isBlank()) {
@@ -48,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Optional<Product> findById(Long id) {
-        return productRepository.findById(id);
+        return productRepository.findById(id).map(this::populateProductRating);
     }
 
     @Override
@@ -65,5 +73,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void delete(Long id) {
         productRepository.deleteById(id);
+    }
+
+    private Product populateProductRating(Product product) {
+        Double avg = ratingRepository.getAverageRatingByProductId(product.getId());
+        Long count = ratingRepository.countByProductId(product.getId());
+
+        product.setProductRating(new Product.ProductRatingSummary(
+            avg != null ? avg : 0.0,
+            count != null ? count : 0L
+        ));
+        return product;
     }
 }

@@ -13,6 +13,8 @@ export interface UserRating {
     productId: number;
     userId: number;
     rating: number;
+    reviewMessage?: string;
+    ratingImages?: any[];
 }
 
 @Injectable({
@@ -23,8 +25,12 @@ export class RatingService {
 
     constructor(private http: HttpClient) { }
 
-    rateProduct(productId: number, rating: number): Observable<UserRating> {
-        return this.http.post<UserRating>(this.apiUrl, { productId, rating });
+    rateProduct(productId: number, rating: number, reviewMessage: string, imageUrls: string[]): Observable<UserRating> {
+        return this.http.post<UserRating>(this.apiUrl, { productId, rating, reviewMessage, imageUrls });
+    }
+
+    getReviews(productId: number): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/product/${productId}/reviews`);
     }
 
     getProductRating(productId: number): Observable<ProductRatingStats> {

@@ -25,6 +25,7 @@ export class ProductDetailComponent implements OnInit {
   hoverRating = 0;
   selectedImage: string = '';
   showTechnicalInfo = true;
+  selectedReviewImage: string | null = null; // For Lightbox
 
   constructor(
     private route: ActivatedRoute,
@@ -36,6 +37,11 @@ export class ProductDetailComponent implements OnInit {
     private messageService: MessageService
   ) { }
 
+  reviewMessage: string = '';
+  selectedFiles: File[] = [];
+  imagePreviews: string[] = [];
+  reviews: any[] = [];
+
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
@@ -43,8 +49,15 @@ export class ProductDetailComponent implements OnInit {
         this.product = p;
         this.selectedImage = p.imageUrl;
         this.loadRatings(id);
+        this.loadReviews(id);
       });
     }
+  }
+
+  loadReviews(id: number) {
+    this.ratingService.getReviews(id).subscribe(res => {
+      this.reviews = res;
+    });
   }
 
   loadRatings(productId: number): void {
@@ -60,17 +73,67 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
+  onFileSelected(event: any) {
+    if (event.target.files) {
+      for (let i = 0; i < event.target.files.length; i++) {
+        const file = event.target.files[i];
+        this.selectedFiles.push(file);
+
+        // Preview
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.imagePreviews.push(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+
+  openImage(imageSrc: string) {
+    this.selectedReviewImage = imageSrc;
+  }
+
+  closeImage() {
+    this.selectedReviewImage = null;
+  }
+
   submitRating(rating: number): void {
     if (!this.auth.isLoggedIn()) {
       this.auth.triggerLoginModal();
       return;
     }
 
-    this.ratingService.rateProduct(this.product.id, rating).subscribe({
+    // Convert images to base64 strings for simple handling
+    const base64Images: string[] = [];
+    let processed = 0;
+
+    if (this.selectedFiles.length > 0) {
+      this.selectedFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          base64Images.push(reader.result as string);
+          processed++;
+          if (processed === this.selectedFiles.length) {
+            this.sendRating(rating, base64Images);
+          }
+        };
+      });
+    } else {
+      this.sendRating(rating, []);
+    }
+  }
+
+  sendRating(rating: number, images: string[]) {
+    this.ratingService.rateProduct(this.product.id, rating, this.reviewMessage, images).subscribe({
       next: () => {
         this.userRating = rating;
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Rating submitted successfully!' });
         this.loadRatings(this.product.id);
+        this.loadReviews(this.product.id);
+        this.reviewMessage = '';
+        this.selectedFiles = [];
+        this.imagePreviews = [];
       },
       error: (err) => {
         console.error('Error submitting rating', err);
