@@ -64,20 +64,80 @@
       </button>
 
       <!-- User Rating Section -->
+      <!-- User Review Section -->
       <div class="user-rating-section">
-        <div class="user-rating" *ngIf="auth.isLoggedIn()">
-          <p class="rating-label">Rate this product:</p>
-          <div class="stars-input">
-            <span *ngFor="let star of [1,2,3,4,5]" class="star clickable" [class.filled]="star <= userRating"
-              [class.hover]="star <= hoverRating" (click)="submitRating(star); $event.stopPropagation()"
-              (mouseenter)="hoverRating = star" (mouseleave)="hoverRating = 0">★</span>
+        <h3 class="section-title">Customer Reviews</h3>
+
+        <!-- Write a Review -->
+        <div class="write-review" *ngIf="auth.isLoggedIn()">
+          <h4 class="subsection-title">Write a Review</h4>
+          
+          <!-- Star Rating Input -->
+          <div class="rating-input-group">
+            <span class="label">Your Rating:</span>
+            <div class="stars-input">
+              <span *ngFor="let star of [1,2,3,4,5]" class="star clickable" [class.filled]="star <= userRating"
+                [class.hover]="star <= hoverRating" (click)="submitRating(star); $event.stopPropagation()"
+                (mouseenter)="hoverRating = star" (mouseleave)="hoverRating = 0">★</span>
+            </div>
+            <span class="rating-value" *ngIf="userRating > 0">{{userRating}}/5</span>
           </div>
-          <span class="your-rating" *ngIf="userRating > 0">Your rating: {{userRating}} stars</span>
+
+          <!-- Review Message -->
+          <div class="review-form">
+            <textarea [(ngModel)]="reviewMessage" placeholder="Share your experience (optional)" class="review-textarea" rows="3"></textarea>
+            
+            <!-- Image Upload -->
+             <div class="image-upload">
+              <label class="upload-btn">
+                <i class="bi bi-camera"></i> Add Photos
+                <input type="file" multiple (change)="onFileSelected($event)" accept="image/*" hidden>
+              </label>
+              <div class="selected-images-preview" *ngIf="imagePreviews.length > 0">
+                <div class="preview-item" *ngFor="let img of imagePreviews">
+                  <img [src]="img" alt="Preview">
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-submit-review" (click)="submitRating(userRating)" [disabled]="userRating === 0">
+              Submit Review
+            </button>
+          </div>
         </div>
+
         <p class="login-prompt" *ngIf="!auth.isLoggedIn()">
-          <a (click)="auth.triggerLoginModal(); $event.stopPropagation()"
-            style="cursor: pointer; color: #667eea;">Login</a> to rate this product
+          <a (click)="auth.triggerLoginModal(); $event.stopPropagation()" class="link-login">Login</a> to write a review
         </p>
+
+        <!-- Reviews List -->
+        <div class="reviews-list">
+          <div class="review-item" *ngFor="let review of reviews">
+            <div class="review-header">
+              <div class="reviewer-avatar">{{review.id % 10}}</div> <!-- Placeholder avatar -->
+              <div class="review-meta">
+                <span class="reviewer-name">User {{review.userId}}</span> <!-- Ideally fetch username -->
+                <div class="stars-display small">
+                  <span *ngFor="let star of [1,2,3,4,5]" class="star" [class.filled]="star <= review.rating">★</span>
+                </div>
+              </div>
+              <span class="review-date">Verified Purchase</span>
+            </div>
+            <p class="review-text" *ngIf="review.reviewMessage">{{review.reviewMessage}}</p>
+            <div class="review-images" *ngIf="review.ratingImages && review.ratingImages.length > 0">
+              <img *ngFor="let img of review.ratingImages" [src]="'data:image/jpeg;base64,' + img.picByte" class="review-img" alt="User Image" (click)="openImage('data:image/jpeg;base64,' + img.picByte)">
+            </div>
+          </div>
+          <div class="no-reviews" *ngIf="reviews.length === 0">
+            No reviews yet. Be the first to review this product!
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Lightbox Modal -->
+      <div class="image-lightbox" *ngIf="selectedReviewImage" (click)="closeImage()">
+        <span class="close-lightbox">&times;</span>
+        <img [src]="selectedReviewImage" class="lightbox-content" (click)="$event.stopPropagation()">
       </div>
 
       <!-- Technical Information -->

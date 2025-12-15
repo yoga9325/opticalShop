@@ -26,6 +26,33 @@ public class ProductRating {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "review_message", columnDefinition = "TEXT")
+    private String reviewMessage;
+
+    @OneToMany(mappedBy = "productRating", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<RatingImage> ratingImages = new java.util.ArrayList<>();
+
+    // ... (rest of the file)
+
+    // Helper method to add image
+    public void addImage(RatingImage image) {
+        ratingImages.add(image);
+        image.setProductRating(this);
+    }
+    
+    public void removeImage(RatingImage image) {
+        ratingImages.remove(image);
+        image.setProductRating(null);
+    }
+
+    public java.util.List<RatingImage> getRatingImages() {
+        return ratingImages;
+    }
+
+    public void setRatingImages(java.util.List<RatingImage> ratingImages) {
+        this.ratingImages = ratingImages;
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -94,4 +121,14 @@ public class ProductRating {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public String getReviewMessage() {
+        return reviewMessage;
+    }
+
+    public void setReviewMessage(String reviewMessage) {
+        this.reviewMessage = reviewMessage;
+    }
+
+
 }

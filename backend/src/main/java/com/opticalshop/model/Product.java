@@ -1,7 +1,10 @@
 package com.opticalshop.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
+
+
 
 @Entity
 @Table(name = "products")
@@ -34,6 +37,44 @@ public class Product {
     private String frameType;
     private String frameShape;
     private String color;
+
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private ProductRatingSummary productRating;
+
+    public ProductRatingSummary getProductRating() {
+        return productRating;
+    }
+
+    public void setProductRating(ProductRatingSummary productRating) {
+        this.productRating = productRating;
+    }
+
+    public static class ProductRatingSummary {
+        private Double averageRating;
+        private Long ratingCount;
+
+        public ProductRatingSummary(Double averageRating, Long ratingCount) {
+            this.averageRating = averageRating;
+            this.ratingCount = ratingCount;
+        }
+
+        public Double getAverageRating() {
+            return averageRating;
+        }
+
+        public void setAverageRating(Double averageRating) {
+            this.averageRating = averageRating;
+        }
+
+        public Long getRatingCount() {
+            return ratingCount;
+        }
+
+        public void setRatingCount(Long ratingCount) {
+            this.ratingCount = ratingCount;
+        }
+    }
 
     // getters and setters
     public Long getId() {
