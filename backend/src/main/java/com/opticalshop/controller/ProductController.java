@@ -41,9 +41,9 @@ public class ProductController {
         return productService.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product p) {
-        return ResponseEntity.ok(productService.create(p));
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<Product> create(@ModelAttribute Product p, @RequestParam(value = "image", required = false) org.springframework.web.multipart.MultipartFile image) {
+        return ResponseEntity.ok(productService.create(p, image));
     }
 
     @PutMapping("/{id}")

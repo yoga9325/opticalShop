@@ -38,7 +38,7 @@ export class ProductService {
   }
 
   // Admin operations
-  createProduct(product: Product): Observable<Product> {
+  createProduct(product: any): Observable<Product> {
     return this.http.post<Product>(`${this.apiUrl}`, product);
   }
 
