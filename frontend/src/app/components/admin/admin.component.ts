@@ -99,6 +99,14 @@ export class AdminComponent implements OnInit {
   }
 
   showCreateProductModal = false;
+  selectedImageFile: File | null = null;
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedImageFile = file;
+    }
+  }
 
   openCreateProductModal(): void {
     this.showCreateProductModal = true;
@@ -109,7 +117,21 @@ export class AdminComponent implements OnInit {
   }
 
   createProduct(): void {
-    this.productService.createProduct(this.newProduct).subscribe(() => {
+    const formData = new FormData();
+    formData.append('name', this.newProduct.name);
+    formData.append('description', this.newProduct.description);
+    formData.append('price', this.newProduct.price.toString());
+    formData.append('category', this.newProduct.category);
+    formData.append('stockQuantity', this.newProduct.stockQuantity.toString());
+    formData.append('brand', this.newProduct.brand || '');
+    
+    if (this.selectedImageFile) {
+      formData.append('image', this.selectedImageFile);
+    } else if (this.newProduct.imageUrl) {
+       formData.append('imageUrl', this.newProduct.imageUrl);
+    }
+
+    this.productService.createProduct(formData).subscribe(() => {
       this.loadProducts();
       this.newProduct = {
         name: '',
@@ -119,6 +141,7 @@ export class AdminComponent implements OnInit {
         stockQuantity: 0,
         imageUrl: ''
       };
+      this.selectedImageFile = null;
       this.closeCreateProductModal();
     });
   }

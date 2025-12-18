@@ -69,7 +69,8 @@ export class ProductUploadComponent {
       }
 
       this.loading = true;
-      this.productService.createProduct(productData).subscribe({
+      // Send FormData instead of FormBuilder value
+      this.productService.createProduct(formData).subscribe({
         next: () => {
           this.router.navigate(['/admin/products']);
         },

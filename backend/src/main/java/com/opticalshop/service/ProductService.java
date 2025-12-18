@@ -11,6 +11,7 @@ public interface ProductService {
     Page<Product> listWithFilters(String q, String gender, String frameType, String frameShape, String color, Pageable pageable);
     Optional<Product> findById(Long id);
     Product create(Product p);
+    Product create(Product p, org.springframework.web.multipart.MultipartFile image);
     Product update(Long id, Product p);
     void delete(Long id);
 }

@@ -59,8 +59,20 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(id).map(this::populateProductRating);
     }
 
+    @Autowired
+    private com.opticalshop.service.CloudinaryService cloudinaryService;
+
     @Override
     public Product create(Product p) {
+        return productRepository.save(p);
+    }
+
+    @Override
+    public Product create(Product p, org.springframework.web.multipart.MultipartFile image) {
+        if (image != null && !image.isEmpty()) {
+            String url = cloudinaryService.uploadFile(image);
+            p.setImageUrl(url);
+        }
         return productRepository.save(p);
     }
 
