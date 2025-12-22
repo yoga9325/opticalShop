@@ -13,6 +13,11 @@
                 <a routerLink="/about" class="text-decoration-none text-dark">About</a>
                 <a routerLink="/contact" class="text-decoration-none text-dark">Contact</a>
 
+                <!-- Book Appointment CTA -->
+                <a routerLink="/appointment" class="btn-cta">
+                    <i class="bi bi-calendar-check-fill me-1"></i> Book Eye Test
+                </a>
+
                 <!-- Admin Link -->
                 <a *ngIf="isAdmin()" routerLink="/admin" class="text-decoration-none text-dark">Admin</a>
 
@@ -37,6 +42,18 @@
                             <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/order-history"
                                 (click)="isDropdownOpen = false">
                                 <i class="bi bi-box-seam"></i> My Orders
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 justify-content-between cursor-pointer"
+                                (click)="handleProtectedNavigation('/my-appointments'); isDropdownOpen = false">
+                                <span><i class="bi bi-calendar-check"></i> My Appointments</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 justify-content-between cursor-pointer"
+                                (click)="handleProtectedNavigation('/my-prescriptions'); isDropdownOpen = false">
+                                <span><i class="bi bi-file-medical"></i> My Prescriptions</span>
                             </a>
                         </li>
                         <li>

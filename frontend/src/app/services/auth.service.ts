@@ -112,6 +112,10 @@ export class AuthService {
       return null;
     }
   }
+  getCurrentUser(): { username: string | null } {
+    return { username: localStorage.getItem('username') };
+  }
+
   triggerLoginModal() {
     this.showLoginModalSubject.next(true);
   }

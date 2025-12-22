@@ -18,6 +18,14 @@ public class CartItem {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @ManyToOne
+    @JoinColumn(name = "lens_id")
+    private Lens lens;
+
+    @ManyToOne
+    @JoinColumn(name = "lens_coating_id")
+    private LensCoating lensCoating;
+
     private int quantity;
 
     public Long getId() {
@@ -50,5 +58,21 @@ public class CartItem {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public Lens getLens() {
+        return lens;
+    }
+
+    public void setLens(Lens lens) {
+        this.lens = lens;
+    }
+
+    public LensCoating getLensCoating() {
+        return lensCoating;
+    }
+
+    public void setLensCoating(LensCoating lensCoating) {
+        this.lensCoating = lensCoating;
     }
 }

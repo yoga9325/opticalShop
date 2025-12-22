@@ -1,0 +1,86 @@
+<div class="appointment-page">
+    <p-toast></p-toast>
+    
+    <div class="booking-container" [@scaleIn]>
+        <!-- Left Side: Hero / Context -->
+        <div class="booking-hero" [@staggerFade]>
+            <div class="hero-content">
+                <h1 class="hero-title stagger-item">Premium Eye Care</h1>
+                <p class="hero-subtitle stagger-item">Experience the clearer vision you deserve with our comprehensive eye examinations.</p>
+                <ul class="feature-list">
+                    <li class="stagger-item"><i class="bi bi-check2"></i> Certified Optometrists</li>
+                    <li class="stagger-item"><i class="bi bi-check2"></i> Advanced Digital Testing</li>
+                    <li class="stagger-item"><i class="bi bi-check2"></i> Wide Range of Frames</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Side: Interaction -->
+        <div class="booking-form-wrapper" [@fadeInUp]>
+            <div class="form-header">
+                <h2>Book Your Appointment</h2>
+                <p>Select a date and time that suits you.</p>
+            </div>
+
+            <!-- Booking Form -->
+            <div class="appointment-form">
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <div class="input-group">
+                        <i class="bi bi-calendar-event input-icon"></i>
+                        <p-calendar 
+                            [(ngModel)]="date" 
+                            [minDate]="minDate"
+                            dateFormat="dd/mm/yy"
+                            [showIcon]="false"
+                            placeholder="Select appointment date"
+                            styleClass="custom-calendar"
+                            inputStyleClass="form-control">
+                        </p-calendar>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Time</label>
+                    <div class="input-group">
+                        <i class="bi bi-clock input-icon"></i>
+                        <p-calendar 
+                            [(ngModel)]="time" 
+                            [timeOnly]="true"
+                            [showIcon]="false"
+                            placeholder="Select appointment time"
+                            hourFormat="24"
+                            styleClass="custom-calendar"
+                            inputStyleClass="form-control">
+                        </p-calendar>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Purpose</label>
+                    <div class="input-group">
+                        <i class="bi bi-eye input-icon"></i>
+                        <select class="form-select" [(ngModel)]="purpose">
+                            <option value="Routine Eye Checkup">Routine Eye Checkup</option>
+                            <option value="Contact Lens Fitting">Contact Lens Fitting</option>
+                            <option value="Frame Consultation">Frame Consultation</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-submit" (click)="bookAppointment()">
+                    Confirm Booking
+                </button>
+                <!-- <button class="btn-cancel" (click)="cancelBooking()">
+                    Cancel Booking
+                </button> -->
+                <button class="btn-view-appointments" routerLink="/my-appointments">
+                    <i class="bi bi-calendar-check"></i>
+                    View My Appointments
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

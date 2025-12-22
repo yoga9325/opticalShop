@@ -7,28 +7,159 @@
           <tr>
             <th>ID</th>
             <th>User</th>
-            <th>Exam Date</th>
-            <th>Doctor</th>
-            <th>Sphere (L/R)</th>
-            <th>Cylinder (L/R)</th>
-            <th>Axis (L/R)</th>
+            <th>Family Member</th>
+            <th>Upload Date</th>
+            <th>Expiry Date</th>
+            <th>Image</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let p of prescriptions">
             <td>{{p.id}}</td>
-            <td>{{p.user?.username || 'N/A'}}</td>
-            <td>{{p.examDate | date}}</td>
-            <td>{{p.doctorName}}</td>
-            <td>{{p.sphLeft}} / {{p.sphRight}}</td>
-            <td>{{p.cylLeft}} / {{p.cylRight}}</td>
-            <td>{{p.axisLeft}} / {{p.axisRight}}</td>
+            <td>
+              <div>
+                <strong>{{p.user?.username || 'N/A'}}</strong>
+                <br>
+                <small class="text-muted">{{p.user?.email}}</small>
+              </div>
+            </td>
+            <td>
+              <span class="badge bg-primary">{{p.familyMemberName}}</span>
+            </td>
+            <td>{{p.uploadDate | date:'medium'}}</td>
+            <td>
+              <span *ngIf="p.expiryDate" 
+                    [class.text-danger]="isExpired(p.expiryDate)"
+                    [class.text-success]="!isExpired(p.expiryDate)">
+                {{p.expiryDate | date:'mediumDate'}}
+                <span *ngIf="isExpired(p.expiryDate)" class="badge bg-danger ms-1">Expired</span>
+              </span>
+              <span *ngIf="!p.expiryDate" class="text-muted">No expiry</span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary" (click)="viewDetails(p)">
+                <i class="bi bi-eye"></i> View
+              </button>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-danger" (click)="deletePrescription(p.id)">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </td>
           </tr>
           <tr *ngIf="prescriptions.length === 0">
             <td colspan="7" class="text-center py-4">No prescriptions found.</td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- Patient Details Modal -->
+<div class="modal-overlay" *ngIf="selectedPrescription" (click)="closeModal()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <i class="bi bi-person-badge"></i>
+          Patient Information
+        </h4>
+        <button type="button" class="btn-close" (click)="closeModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="patient-info">
+          <div class="info-section">
+            <h5 class="section-title">
+              <i class="bi bi-person-circle"></i>
+              User Details
+            </h5>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Username:</label>
+                <span>{{selectedPrescription.user?.username}}</span>
+              </div>
+              <div class="info-item">
+                <label>Email:</label>
+                <span>{{selectedPrescription.user?.email}}</span>
+              </div>
+              <div class="info-item">
+                <label>Mobile:</label>
+                <span>{{selectedPrescription.user?.mobileNumber}}</span>
+              </div>
+              <div class="info-item">
+                <label>Name:</label>
+                <span>{{selectedPrescription.user?.firstName}} {{selectedPrescription.user?.lastName}}</span>
+              </div>
+              <div class="info-item full-width">
+                <label>Address:</label>
+                <span>{{selectedPrescription.user?.address}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <h5 class="section-title">
+              <i class="bi bi-file-medical"></i>
+              Prescription Details
+            </h5>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Prescription ID:</label>
+                <span>#{{selectedPrescription.id}}</span>
+              </div>
+              <div class="info-item">
+                <label>Family Member:</label>
+                <span class="badge bg-primary">{{selectedPrescription.familyMemberName}}</span>
+              </div>
+              <div class="info-item">
+                <label>Upload Date:</label>
+                <span>{{selectedPrescription.uploadDate | date:'full'}}</span>
+              </div>
+              <div class="info-item">
+                <label>Expiry Date:</label>
+                <span [class.text-danger]="isExpired(selectedPrescription.expiryDate)">
+                  {{selectedPrescription.expiryDate ? (selectedPrescription.expiryDate | date:'full') : 'No expiry'}}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">
+          <i class="bi bi-x-circle"></i> Close
+        </button>
+        <a [href]="getImageUrl(selectedPrescription.imagePath)" target="_blank" class="btn btn-primary">
+          <i class="bi bi-image"></i> View Prescription
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showDeleteConfirm" (click)="cancelDelete()">
+  <div class="confirm-dialog" (click)="$event.stopPropagation()">
+    <div class="confirm-icon">
+      <i class="bi bi-exclamation-triangle"></i>
+    </div>
+    <h3 class="confirm-title">Delete Prescription?</h3>
+    <p class="confirm-message">
+      Are you sure you want to delete this prescription? This action cannot be undone.
+    </p>
+    <div class="confirm-actions">
+      <button class="btn btn-cancel" (click)="cancelDelete()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="btn btn-delete-confirm" (click)="confirmDelete()">
+        <i class="bi bi-trash"></i> Delete
+      </button>
     </div>
   </div>
 </div>

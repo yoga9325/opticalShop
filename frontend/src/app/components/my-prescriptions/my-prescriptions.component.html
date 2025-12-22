@@ -1,0 +1,150 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="prescriptions-page" [@fadeIn]>
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="bi bi-file-medical"></i>
+        My Prescriptions
+      </h1>
+      <p class="page-subtitle">Manage prescriptions for you and your family</p>
+    </div>
+    <button class="btn-upload" (click)="navigateToUpload()">
+      <i class="bi bi-cloud-upload"></i>
+      Upload Prescription
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading prescriptions...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && prescriptions.length === 0" class="empty-state">
+    <i class="bi bi-file-medical-fill"></i>
+    <h3>No Prescriptions Yet</h3>
+    <p>Upload your first prescription to get started</p>
+    <button class="btn-upload-empty" (click)="navigateToUpload()">
+      <i class="bi bi-cloud-upload"></i>
+      Upload Prescription
+    </button>
+  </div>
+
+  <!-- Prescriptions Grid -->
+  <div *ngIf="!loading && prescriptions.length > 0" class="prescriptions-grid">
+    <div *ngFor="let prescription of prescriptions" class="prescription-card" (click)="viewDetails(prescription)">
+      <div class="card-image">
+        <img [src]="getImageUrl(prescription.imagePath)" [alt]="prescription.familyMemberName" />
+        <div class="image-overlay">
+          <i class="bi bi-eye"></i>
+          <span>View Details</span>
+        </div>
+      </div>
+      
+      <div class="card-content">
+        <h3 class="member-name">
+          <i class="bi bi-person-fill"></i>
+          {{prescription.familyMemberName}}
+        </h3>
+        
+        <div class="card-info">
+          <div class="info-item">
+            <i class="bi bi-calendar-plus"></i>
+            <span>Uploaded: {{prescription.uploadDate | date:'MMM d, y'}}</span>
+          </div>
+          
+          <div class="info-item" *ngIf="prescription.expiryDate">
+            <i class="bi bi-calendar-x"></i>
+            <span [class.expired]="isExpired(prescription.expiryDate)">
+              Expires: {{prescription.expiryDate | date:'MMM d, y'}}
+            </span>
+          </div>
+        </div>
+        
+        <div class="card-actions">
+          <button class="btn-delete" (click)="deletePrescription(prescription, $event)">
+            <i class="bi bi-trash"></i>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div class="modal-overlay" *ngIf="selectedPrescription" (click)="closeDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          <i class="bi bi-file-medical-fill"></i>
+          Prescription Details
+        </h2>
+        <button class="btn-close" (click)="closeDetails()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="prescription-image">
+          <img [src]="getImageUrl(selectedPrescription.imagePath)" [alt]="selectedPrescription.familyMemberName" />
+        </div>
+        
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="bi bi-person"></i>
+              Family Member
+            </div>
+            <div class="detail-value">
+              {{selectedPrescription.familyMemberName}}
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">
+              <i class="bi bi-calendar-plus"></i>
+              Upload Date
+            </div>
+            <div class="detail-value">
+              {{selectedPrescription.uploadDate | date:'fullDate'}}
+            </div>
+          </div>
+
+          <div class="detail-item" *ngIf="selectedPrescription.expiryDate">
+            <div class="detail-label">
+              <i class="bi bi-calendar-x"></i>
+              Expiry Date
+            </div>
+            <div class="detail-value" [class.expired]="isExpired(selectedPrescription.expiryDate)">
+              {{selectedPrescription.expiryDate | date:'fullDate'}}
+              <span *ngIf="isExpired(selectedPrescription.expiryDate)" class="expired-badge">Expired</span>
+            </div>
+          </div>
+
+          <div class="detail-item" *ngIf="selectedPrescription.doctorName">
+            <div class="detail-label">
+              <i class="bi bi-person-badge"></i>
+              Doctor Name
+            </div>
+            <div class="detail-value">
+              {{selectedPrescription.doctorName}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <a [href]="getImageUrl(selectedPrescription.imagePath)" download class="btn-download">
+          <i class="bi bi-download"></i>
+          Download
+        </a>
+        <button class="btn-modal-close" (click)="closeDetails()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

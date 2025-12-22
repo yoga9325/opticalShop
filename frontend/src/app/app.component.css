@@ -275,3 +275,33 @@ body.dark-mode .nav-link:hover .user-avatar {
     background: #475569;
     color: #e2e8f0;
 }
+
+/* CTA Button */
+.btn-cta {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white !important;
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(118, 75, 162, 0.25);
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(118, 75, 162, 0.35);
+    filter: brightness(1.1);
+}
+
+.btn-cta:active {
+    transform: translateY(0);
+}
+
+.btn-cta i {
+    font-size: 1rem;
+}

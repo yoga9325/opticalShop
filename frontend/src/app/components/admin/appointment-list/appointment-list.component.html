@@ -1,0 +1,52 @@
+<div class="card">
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h3>Appointment Management</h3>
+        <button pButton icon="pi pi-refresh" (click)="loadAppointments()" label="Refresh" class="p-button-outlined"></button>
+    </div>
+
+    <p-table [value]="appointments" [loading]="loading" [paginator]="true" [rows]="10" responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Purpose</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-apt>
+            <tr>
+                <td>{{apt.id}}</td>
+                <td>{{apt.user?.username}}</td>
+                <td>{{apt.appointmentDate | date}}</td>
+                <td>{{apt.appointmentTime}}</td>
+                <td>{{apt.purpose}}</td>
+                <td>
+                    <span [class]="'status-badge status-' + apt.status.toLowerCase()">
+                        {{apt.status}}
+                    </span>
+                </td>
+                <td>
+                    <div class="flex gap-2" *ngIf="apt.status === 'PENDING'">
+                        <button pButton icon="pi pi-check" class="p-button-rounded p-button-success p-button-sm" 
+                            (click)="updateStatus(apt, 'CONFIRMED')" title="Confirm"></button>
+                        <button pButton icon="pi pi-times" class="p-button-rounded p-button-danger p-button-sm" 
+                            (click)="updateStatus(apt, 'CANCELLED')" title="Cancel"></button>
+                    </div>
+                     <div class="flex gap-2" *ngIf="apt.status === 'CONFIRMED'">
+                        <button pButton icon="pi pi-check-circle" class="p-button-rounded p-button-info p-button-sm" 
+                            (click)="updateStatus(apt, 'COMPLETED')" title="Mark Completed"></button>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="7" class="text-center p-4">No appointments found.</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<p-toast></p-toast>

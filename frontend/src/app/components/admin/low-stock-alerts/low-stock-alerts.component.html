@@ -1,0 +1,67 @@
+<div class="alerts-container">
+  <div class="alerts-header">
+    <h2>
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      Low Stock Alerts
+    </h2>
+    <p class="subtitle">Monitor and manage products with low inventory levels</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading alerts...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && alerts.length === 0" class="empty-state">
+    <i class="bi bi-check-circle"></i>
+    <h3>All Good!</h3>
+    <p>No low stock alerts at the moment. All products are well-stocked.</p>
+  </div>
+
+  <!-- Alerts List -->
+  <div *ngIf="!loading && alerts.length > 0" class="alerts-grid">
+    <div *ngFor="let alert of alerts" class="alert-card" [ngClass]="getStockStatus(alert)">
+      <div class="alert-icon">
+        <i class="bi bi-exclamation-circle-fill"></i>
+      </div>
+      
+      <div class="alert-content">
+        <div class="product-info">
+          <h3 class="product-name">{{ alert.product.name }}</h3>
+          <p class="product-brand">{{ alert.product.brand }}</p>
+        </div>
+
+        <div class="stock-info">
+          <div class="stock-row">
+            <span class="label">Current Stock:</span>
+            <span class="value stock-value" [ngClass]="getStockStatus(alert)">
+              {{ alert.currentStock }} units
+            </span>
+          </div>
+          <div class="stock-row">
+            <span class="label">Threshold:</span>
+            <span class="value">{{ alert.threshold }} units</span>
+          </div>
+          <div class="stock-row">
+            <span class="label">Alert Date:</span>
+            <span class="value">{{ formatDate(alert.alertDate) }}</span>
+          </div>
+        </div>
+
+        <div class="alert-actions">
+          <button class="btn btn-resolve" (click)="resolveAlert(alert)">
+            <i class="bi bi-check-lg"></i> Mark as Resolved
+          </button>
+        </div>
+      </div>
+
+      <div class="status-badge" [ngClass]="getStockStatus(alert)">
+        <span *ngIf="getStockStatus(alert) === 'out-of-stock'">OUT OF STOCK</span>
+        <span *ngIf="getStockStatus(alert) === 'critical'">CRITICAL</span>
+        <span *ngIf="getStockStatus(alert) === 'low'">LOW STOCK</span>
+      </div>
+    </div>
+  </div>
+</div>

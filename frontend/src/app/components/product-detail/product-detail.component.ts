@@ -5,6 +5,8 @@ import { CartService } from '../../services/cart.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { AuthService } from '../../services/auth.service';
 import { RatingService } from '../../services/rating.service';
+import { LensService } from '../../services/lens.service';
+import { Lens, LensCoating } from '../../models/lens.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -26,6 +28,12 @@ export class ProductDetailComponent implements OnInit {
   selectedImage: string = '';
   showTechnicalInfo = true;
   selectedReviewImage: string | null = null; // For Lightbox
+  
+  lenses: Lens[] = [];
+  coatings: LensCoating[] = [];
+  selectedLens: Lens | null = null;
+  selectedCoating: LensCoating | null = null;
+  totalPrice: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -34,6 +42,7 @@ export class ProductDetailComponent implements OnInit {
     private wishlistService: WishlistService,
     public auth: AuthService,
     private ratingService: RatingService,
+    private lensService: LensService,
     private messageService: MessageService
   ) { }
 
@@ -50,8 +59,22 @@ export class ProductDetailComponent implements OnInit {
         this.selectedImage = p.imageUrl;
         this.loadRatings(id);
         this.loadReviews(id);
+        this.loadLensOptions();
+        this.totalPrice = p.price;
       });
     }
+  }
+
+  loadLensOptions() {
+    this.lensService.getAllLenses().subscribe(res => this.lenses = res);
+    this.lensService.getAllCoatings().subscribe(res => this.coatings = res);
+  }
+
+  updateTotalPrice() {
+    let price = this.product.price;
+    if (this.selectedLens) price += this.selectedLens.price;
+    if (this.selectedCoating) price += this.selectedCoating.price;
+    this.totalPrice = price;
   }
 
   loadReviews(id: number) {
@@ -147,7 +170,7 @@ export class ProductDetailComponent implements OnInit {
       this.auth.triggerLoginModal();
       return;
     }
-    this.cart.addToCart(this.product.id, this.qty).subscribe({
+    this.cart.addToCart(this.product.id, this.qty, this.selectedLens?.id, this.selectedCoating?.id).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product added to cart!' });
       },
@@ -166,6 +189,15 @@ export class ProductDetailComponent implements OnInit {
     }
     this.wishlistService.addToWishlist(this.product.id).subscribe(() => {
       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Added to wishlist!' });
+    });
+  }
+
+  showTryOnMessage() {
+    this.messageService.add({ 
+      severity: 'info', 
+      summary: 'Coming Soon', 
+      detail: 'Virtual Try-On feature is currently under development. Stay tuned!',
+      life: 3000
     });
   }
 
