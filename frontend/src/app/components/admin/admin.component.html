@@ -30,6 +30,13 @@
       <button class="nav-btn" [class.active]="activeTab === 'prescriptions'" (click)="activeTab = 'prescriptions'">
         <i class="bi bi-file-medical"></i> Prescriptions
       </button>
+      <button class="nav-btn" [class.active]="activeTab === 'appointments'" (click)="activeTab = 'appointments'">
+        <i class="bi bi-calendar-check"></i> Appointments
+      </button>
+      <button class="nav-btn" [class.active]="activeTab === 'low-stock-alerts'" (click)="activeTab = 'low-stock-alerts'">
+        <i class="bi bi-exclamation-triangle-fill"></i> Stock Alerts
+        <span class="alert-badge" *ngIf="alertCount > 0">{{ alertCount }}</span>
+      </button>
       <button class="nav-btn" [class.active]="activeTab === 'messages'" (click)="activeTab = 'messages'">
         <i class="bi bi-envelope"></i> Messages
       </button>
@@ -39,6 +46,16 @@
   <!-- Prescriptions Tab -->
   <div *ngIf="activeTab === 'prescriptions'" class="tab-content">
     <app-prescription-list></app-prescription-list>
+  </div>
+
+  <!-- Appointments Tab -->
+  <div *ngIf="activeTab === 'appointments'" class="tab-content">
+    <app-appointment-list></app-appointment-list>
+  </div>
+
+  <!-- Low Stock Alerts Tab -->
+  <div *ngIf="activeTab === 'low-stock-alerts'" class="tab-content">
+    <app-low-stock-alerts></app-low-stock-alerts>
   </div>
 
   <!-- Products Tab -->

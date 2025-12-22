@@ -9,6 +9,8 @@ import com.opticalshop.model.User;
 import com.opticalshop.repository.CartRepository;
 import com.opticalshop.repository.ProductRepository;
 import com.opticalshop.repository.UserRepository;
+import com.opticalshop.repository.LensRepository;
+import com.opticalshop.repository.LensCoatingRepository;
 import com.opticalshop.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,12 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private LensRepository lensRepository;
+
+    @Autowired
+    private LensCoatingRepository lensCoatingRepository;
+
     @Override
     public CartDto getCartForUser(Long userId) {
         Cart cart = getOrCreateCart(userId);
@@ -35,7 +43,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDto addProductToCart(Long userId, Long productId, int quantity) {
+    public CartDto addProductToCart(Long userId, Long productId, int quantity, Long lensId, Long coatingId) {
         Cart cart = getOrCreateCart(userId);
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -65,6 +73,14 @@ public class CartServiceImpl implements CartService {
             newItem.setCart(cart);
             newItem.setProduct(product);
             newItem.setQuantity(quantity);
+            
+            if (lensId != null) {
+                newItem.setLens(lensRepository.findById(lensId).orElse(null));
+            }
+            if (coatingId != null) {
+                newItem.setLensCoating(lensCoatingRepository.findById(coatingId).orElse(null));
+            }
+
             cart.getItems().add(newItem);
         }
 
@@ -106,6 +122,19 @@ public class CartServiceImpl implements CartService {
         dto.setQuantity(cartItem.getQuantity());
         dto.setPrice(cartItem.getProduct().getPrice().doubleValue());
         dto.setImageUrl(cartItem.getProduct().getImageUrl());
+        
+        if (cartItem.getLens() != null) {
+            dto.setLensId(cartItem.getLens().getId());
+            dto.setLensName(cartItem.getLens().getName());
+            dto.setLensPrice(cartItem.getLens().getPrice());
+        }
+
+        if (cartItem.getLensCoating() != null) {
+            dto.setLensCoatingId(cartItem.getLensCoating().getId());
+            dto.setLensCoatingName(cartItem.getLensCoating().getName());
+            dto.setLensCoatingPrice(cartItem.getLensCoating().getPrice());
+        }
+
         return dto;
     }
 }

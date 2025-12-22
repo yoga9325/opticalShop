@@ -16,6 +16,9 @@ import { OrderService } from '../../services/order.service';
 import { BillingComponent } from './billing/billing.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PrescriptionListComponent } from './prescription-list/prescription-list.component';
+import { AppointmentListComponent } from './appointment-list/appointment-list.component';
+import { LowStockAlertsComponent } from './low-stock-alerts/low-stock-alerts.component';
+import { InventoryService } from '../../services/inventory.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -23,7 +26,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TableModule, ButtonModule, InputTextModule, UserListComponent, AdminAdvertisementComponent, BillingComponent, DashboardComponent, PrescriptionListComponent]
+  imports: [CommonModule, FormsModule, TableModule, ButtonModule, InputTextModule, UserListComponent, AdminAdvertisementComponent, BillingComponent, DashboardComponent, PrescriptionListComponent, AppointmentListComponent, LowStockAlertsComponent]
 })
 export class AdminComponent implements OnInit {
   activeTab: string = 'dashboard';
@@ -50,6 +53,7 @@ export class AdminComponent implements OnInit {
   selectedProduct: Product | null = null;
   selectedDiscount: any = null;
   orders: any[] = []; // Kept orders property as it's used later in the file
+  alertCount: number = 0; // Low stock alerts count
 
    private apiUrl = `${environment.apiUrl}`; // Added apiUrl for loadMessages
 
@@ -58,7 +62,8 @@ export class AdminComponent implements OnInit {
     private discountService: DiscountService, 
     private orderService: OrderService, 
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private inventoryService: InventoryService
   ) { }
 
   ngOnInit(): void {
@@ -67,6 +72,7 @@ export class AdminComponent implements OnInit {
     this.loadOrders();
     this.loadUsers(); // Added loadUsers
     this.loadMessages(); // Load messages
+    this.loadAlertCount(); // Load low stock alert count
   }
 
   loadMessages() {
@@ -75,6 +81,15 @@ export class AdminComponent implements OnInit {
         this.messages = data;
       },
       error: (err) => console.error('Failed to load messages', err)
+    });
+  }
+
+  loadAlertCount(): void {
+    this.inventoryService.getActiveAlertsCount().subscribe({
+      next: (data) => {
+        this.alertCount = data.count;
+      },
+      error: (err) => console.error('Failed to load alert count', err)
     });
   }
 

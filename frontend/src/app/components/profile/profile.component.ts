@@ -29,8 +29,8 @@ export class ProfileComponent implements OnInit {
     this.userService.getMe().subscribe({
       next: u => {
         this.user = u;
-        this.loading = false;
         this.updateData = { ...u };
+        this.loading = false;
         console.log('User profile loaded:', this.user);
       },
       error: e => { this.error = e.error?.message || e.message || 'Failed to load profile'; this.loading = false; }

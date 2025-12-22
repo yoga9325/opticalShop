@@ -21,11 +21,15 @@ export class CartService {
     );
   }
 
-  addToCart(productId: number, quantity: number): Observable<any> {
-    const params = new HttpParams()
-      .set('productId', productId.toString())
-      .set('quantity', quantity.toString());
-    return this.http.post(`${this.apiUrl}/add`, null, { params }).pipe(
+  addToCart(productId: number, quantity: number, lensId?: number, coatingId?: number): Observable<any> {
+    let params = new HttpParams()
+      .set('productId', productId)
+      .set('quantity', quantity);
+    
+    if (lensId) params = params.set('lensId', lensId);
+    if (coatingId) params = params.set('coatingId', coatingId);
+
+    return this.http.post(`${this.apiUrl}/add`, {}, { params }).pipe(
       tap(cart => this.cartSubject.next(cart))
     );
   }

@@ -20,10 +20,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { TabViewModule } from 'primeng/tabview';
 import { DashboardComponent } from './components/admin/dashboard/dashboard.component';
+import { LowStockAlertsComponent } from './components/admin/low-stock-alerts/low-stock-alerts.component';
+import { InventoryManagementComponent } from './components/admin/inventory-management/inventory-management.component';
 
 @NgModule({
   declarations: [
-    ContactComponent
+    ContactComponent,
+    InventoryManagementComponent
   ],
   imports: [
     BrowserModule,

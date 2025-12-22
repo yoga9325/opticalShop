@@ -23,6 +23,12 @@ public class Prescription {
     private Double axisRight;
     private Double pd; // Pupillary Distance
 
+    // New fields for prescription upload
+    private String imagePath; // Path to uploaded prescription image
+    private String familyMemberName; // Name of family member (self or others)
+    private LocalDateTime uploadDate;
+    private LocalDateTime expiryDate;
+
     private String doctorName;
     private LocalDateTime examDate;
     private LocalDateTime createdAt;
@@ -30,6 +36,9 @@ public class Prescription {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        if (uploadDate == null) {
+            uploadDate = LocalDateTime.now();
+        }
     }
 
     // Getters and Setters
@@ -57,4 +66,14 @@ public class Prescription {
     public void setExamDate(LocalDateTime examDate) { this.examDate = examDate; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    // New getters and setters
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+    public String getFamilyMemberName() { return familyMemberName; }
+    public void setFamilyMemberName(String familyMemberName) { this.familyMemberName = familyMemberName; }
+    public LocalDateTime getUploadDate() { return uploadDate; }
+    public void setUploadDate(LocalDateTime uploadDate) { this.uploadDate = uploadDate; }
+    public LocalDateTime getExpiryDate() { return expiryDate; }
+    public void setExpiryDate(LocalDateTime expiryDate) { this.expiryDate = expiryDate; }
 }

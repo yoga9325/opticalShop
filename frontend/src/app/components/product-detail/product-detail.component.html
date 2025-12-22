@@ -33,7 +33,7 @@
       <!-- Price Section -->
       <div class="price-section">
         <div class="price-row">
-          <span class="current-price">₹{{product.price}}</span>
+          <span class="current-price">₹{{totalPrice}}</span>
           <span class="original-price" *ngIf="product.mPrice">₹{{product.mPrice}}</span>
           <span class="discount-badge" *ngIf="product.mPrice">{{getDiscount()}}% OFF</span>
         </div>
@@ -48,6 +48,30 @@
         </div>
       </div>
 
+      <!-- Lens Selection -->
+      <div class="selection-section" *ngIf="lenses.length > 0">
+        <label>Select Lens:</label>
+        <select [(ngModel)]="selectedLens" (change)="updateTotalPrice()" class="form-select">
+          <option [ngValue]="null">Frame Only (No Lens)</option>
+          <option *ngFor="let lens of lenses" [ngValue]="lens">
+            {{lens.name}} (+ ₹{{lens.price}})
+          </option>
+        </select>
+        <p class="small-desc" *ngIf="selectedLens">{{selectedLens.description}}</p>
+      </div>
+
+      <!-- Coating Selection -->
+      <div class="selection-section" *ngIf="coatings.length > 0 && selectedLens">
+        <label>Select Coating:</label>
+        <select [(ngModel)]="selectedCoating" (change)="updateTotalPrice()" class="form-select">
+          <option [ngValue]="null">No Extra Coating</option>
+          <option *ngFor="let coating of coatings" [ngValue]="coating">
+            {{coating.name}} (+ ₹{{coating.price}})
+          </option>
+        </select>
+        <p class="small-desc" *ngIf="selectedCoating">{{selectedCoating.description}}</p>
+      </div>
+
       <!-- Action Buttons -->
       <div class="action-buttons">
         <button class="btn btn-primary btn-large" (click)="addToCart()">
@@ -59,7 +83,7 @@
       </div>
 
       <!-- Try On Button -->
-      <button class="btn btn-try-on">
+      <button class="btn btn-try-on" (click)="showTryOnMessage()">
         <i class="bi bi-camera"></i> Try On
       </button>
 

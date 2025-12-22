@@ -5,8 +5,6 @@ import { ProductListComponent } from './components/product-list/product-list.com
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { CartComponent } from './components/cart/cart.component';
 import { WishlistComponent } from './components/wishlist/wishlist.component';
-import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
@@ -25,6 +23,8 @@ import { PaymentLenskartComponent } from './components/payment-lenskart/payment-
 import { OrderHistoryLenskartComponent } from './components/order-history-lenskart/order-history-lenskart.component';
 import { AdminAdvertisementComponent } from './components/admin/advertisement/admin-advertisement.component';
 import { DashboardComponent } from './components/admin/dashboard/dashboard.component';
+import { LowStockAlertsComponent } from './components/admin/low-stock-alerts/low-stock-alerts.component';
+import { InventoryManagementComponent } from './components/admin/inventory-management/inventory-management.component';
 
 const routes: Routes = [
   { path: '', component: LenskartHomeComponent },
@@ -37,10 +37,12 @@ const routes: Routes = [
   { path: 'order-confirmation', loadComponent: () => import('./components/order-confirmation/order-confirmation.component').then(m => m.OrderConfirmationComponent), canActivate: [AuthGuard] },
   { path: 'wishlist', component: WishlistLenskartComponent, canActivate: [AuthGuard] },
   { path: 'order-history', component: OrderHistoryLenskartComponent, canActivate: [AuthGuard] },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
   { path: 'about', component: AboutComponent },
   { path: 'contact', component: ContactComponent },
+  { path: 'appointment', loadComponent: () => import('./components/appointment/appointment.component').then(m => m.AppointmentComponent) },
+  { path: 'my-appointments', loadComponent: () => import('./components/my-appointments/my-appointments.component').then(m => m.MyAppointmentsComponent), canActivate: [AuthGuard] },
+  { path: 'my-prescriptions', loadComponent: () => import('./components/my-prescriptions/my-prescriptions.component').then(m => m.MyPrescriptionsComponent), canActivate: [AuthGuard] },
+  { path: 'upload-prescription', loadComponent: () => import('./components/upload-prescription/upload-prescription.component').then(m => m.UploadPrescriptionComponent), canActivate: [AuthGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: 'admin', component: AdminComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'admin/users', component: UserListComponent, canActivate: [AuthGuard, AdminGuard] },
@@ -48,6 +50,8 @@ const routes: Routes = [
   { path: 'admin/products/upload', component: ProductUploadComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'admin/dashboard', component: DashboardComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'admin/advertisements', component: AdminAdvertisementComponent, canActivate: [AuthGuard, AdminGuard] },
+  { path: 'admin/low-stock-alerts', component: LowStockAlertsComponent, canActivate: [AuthGuard, AdminGuard] },
+  { path: 'admin/inventory', component: InventoryManagementComponent, canActivate: [AuthGuard, AdminGuard] },
   { path: 'lenskart-home', component: LenskartHomeComponent },
   // Legacy routes
   { path: 'products-legacy', component: ProductListComponent },

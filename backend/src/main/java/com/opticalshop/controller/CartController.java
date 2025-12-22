@@ -29,9 +29,11 @@ public class CartController {
     @PostMapping("/add")
     public ResponseEntity<CartDto> addProductToCart(@AuthenticationPrincipal UserDetails userDetails,
                                                     @RequestParam Long productId,
-                                                    @RequestParam int quantity) {
+                                                    @RequestParam int quantity,
+                                                    @RequestParam(required = false) Long lensId,
+                                                    @RequestParam(required = false) Long coatingId) {
         User user = userRepository.findByUsername(userDetails.getUsername()).get();
-        return ResponseEntity.ok(cartService.addProductToCart(user.getId(), productId, quantity));
+        return ResponseEntity.ok(cartService.addProductToCart(user.getId(), productId, quantity, lensId, coatingId));
     }
 
     @PostMapping("/remove")

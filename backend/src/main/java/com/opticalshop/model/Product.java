@@ -3,6 +3,7 @@ package com.opticalshop.model;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 
 
@@ -30,13 +31,16 @@ public class Product {
 
     private boolean active = true;
 
-    private int stockQuantity = 0;
+    private Integer stockQuantity = 0;
+    private Integer lowStockThreshold = 10; // Default threshold
+    private LocalDateTime lastStockCheck;
 
     // Filter fields
     private String gender;
     private String frameType;
     private String frameShape;
     private String color;
+    private String material;
 
     @Transient
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -179,5 +183,29 @@ public class Product {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public Integer getLowStockThreshold() {
+        return lowStockThreshold;
+    }
+
+    public void setLowStockThreshold(Integer lowStockThreshold) {
+        this.lowStockThreshold = lowStockThreshold;
+    }
+
+    public LocalDateTime getLastStockCheck() {
+        return lastStockCheck;
+    }
+
+    public void setLastStockCheck(LocalDateTime lastStockCheck) {
+        this.lastStockCheck = lastStockCheck;
+    }
+
+    public String getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(String material) {
+        this.material = material;
     }
 }

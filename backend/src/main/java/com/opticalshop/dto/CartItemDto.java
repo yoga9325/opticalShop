@@ -10,4 +10,12 @@ public class CartItemDto {
     private Integer quantity;
     private Double price;
     private String imageUrl;
+    
+    private Long lensId;
+    private String lensName;
+    private Double lensPrice;
+
+    private Long lensCoatingId;
+    private String lensCoatingName;
+    private Double lensCoatingPrice;
 }
