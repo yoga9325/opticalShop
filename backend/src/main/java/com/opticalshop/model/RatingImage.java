@@ -17,7 +17,6 @@ public class RatingImage {
     private ProductRating productRating;
 
     @Lob
-    @Column(name = "pic_byte", columnDefinition = "LONGBLOB")
     private byte[] picByte;
 
     // Constructors
