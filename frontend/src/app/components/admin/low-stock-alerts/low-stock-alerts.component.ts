@@ -12,11 +12,28 @@ import { InventoryService, LowStockAlert } from '../../../services/inventory.ser
 export class LowStockAlertsComponent implements OnInit {
   alerts: LowStockAlert[] = [];
   loading = false;
+  showResolveModal = false;
+  alertToResolve: LowStockAlert | null = null;
 
   constructor(private inventoryService: InventoryService) {}
 
   ngOnInit(): void {
-    this.loadAlerts();
+    this.refreshAlerts();
+  }
+
+  refreshAlerts(): void {
+    // First trigger a manual stock check to ensure alerts are up-to-date
+    this.inventoryService.manualStockCheck().subscribe({
+      next: () => {
+        // After stock check completes, load the alerts
+        this.loadAlerts();
+      },
+      error: (err) => {
+        console.error('Error during manual stock check', err);
+        // Still try to load alerts even if check fails
+        this.loadAlerts();
+      }
+    });
   }
 
   loadAlerts(): void {
@@ -33,10 +50,21 @@ export class LowStockAlertsComponent implements OnInit {
     });
   }
 
-  resolveAlert(stockAlert: LowStockAlert): void {
-    if (confirm(`Mark this alert as resolved for ${stockAlert.product.name}?`)) {
-      this.inventoryService.resolveAlert(stockAlert.id).subscribe({
+  openResolveModal(stockAlert: LowStockAlert): void {
+    this.alertToResolve = stockAlert;
+    this.showResolveModal = true;
+  }
+
+  closeResolveModal(): void {
+    this.showResolveModal = false;
+    this.alertToResolve = null;
+  }
+
+  confirmResolveAlert(): void {
+    if (this.alertToResolve) {
+      this.inventoryService.resolveAlert(this.alertToResolve.id).subscribe({
         next: () => {
+          this.closeResolveModal();
           this.loadAlerts(); // Reload alerts
         },
         error: (err) => {

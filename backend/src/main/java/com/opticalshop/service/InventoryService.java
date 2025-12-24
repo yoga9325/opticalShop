@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class InventoryService {
@@ -22,30 +25,78 @@ public class InventoryService {
     private LowStockAlertRepository lowStockAlertRepository;
     
     /**
-     * Check all products for low stock and generate alerts
+     * Check all products for low stock and generate alerts (optimized version)
      */
     @Transactional
     public void checkLowStock() {
-        List<Product> allProducts = productRepository.findAll();
+        // Only fetch products with low stock (much faster than fetching all products)
+        List<Product> lowStockProducts = getLowStockProducts();
         
-        for (Product product : allProducts) {
-            Integer stockQty = product.getStockQuantity();
-            Integer threshold = product.getLowStockThreshold();
+        if (lowStockProducts.isEmpty()) {
+            return; // No low stock products, exit early
+        }
+        
+        // Get all product IDs for batch querying
+        List<Long> productIds = lowStockProducts.stream()
+            .map(Product::getId)
+            .toList();
+        
+        // Batch load all existing unresolved alerts for these products (single query)
+        List<LowStockAlert> existingAlerts = 
+            lowStockAlertRepository.findByProductIdInAndResolvedFalse(productIds);
+        
+        // Batch load recently resolved alerts (single query)
+        LocalDateTime oneDayAgo = LocalDateTime.now().minusHours(24);
+        List<LowStockAlert> recentlyResolvedAlerts = 
+            lowStockAlertRepository.findByProductIdInAndResolvedTrueAndResolvedDateAfter(
+                productIds, oneDayAgo);
+        
+        // Create sets for fast lookup
+        Set<Long> productsWithUnresolvedAlerts = existingAlerts.stream()
+            .map(alert -> alert.getProduct().getId())
+            .collect(Collectors.toSet());
+        
+        Set<Long> productsWithRecentlyResolvedAlerts = recentlyResolvedAlerts.stream()
+            .map(alert -> alert.getProduct().getId())
+            .collect(Collectors.toSet());
+        
+        // Generate alerts only for products that need them
+        List<LowStockAlert> newAlerts = new ArrayList<>();
+        List<Product> productsToUpdate = new ArrayList<>();
+        
+        for (Product product : lowStockProducts) {
+            Long productId = product.getId();
             
-            if (stockQty != null && threshold != null && stockQty <= threshold) {
+            // Only create alert if no existing unresolved alert and no recently resolved alert
+            if (!productsWithUnresolvedAlerts.contains(productId) && 
+                !productsWithRecentlyResolvedAlerts.contains(productId)) {
                 
-                // Check if there's already an unresolved alert for this product
-                List<LowStockAlert> existingAlerts = 
-                    lowStockAlertRepository.findByProductIdAndResolvedFalse(product.getId());
-                
-                if (existingAlerts.isEmpty()) {
-                    generateAlert(product);
+                Integer threshold = product.getLowStockThreshold();
+                if (threshold == null) {
+                    threshold = 5;
                 }
+                
+                LowStockAlert alert = new LowStockAlert(
+                    product,
+                    product.getStockQuantity(),
+                    threshold
+                );
+                newAlerts.add(alert);
             }
             
             // Update last stock check time
             product.setLastStockCheck(LocalDateTime.now());
-            productRepository.save(product);
+            productsToUpdate.add(product);
+        }
+        
+        // Batch save all new alerts (single query)
+        if (!newAlerts.isEmpty()) {
+            lowStockAlertRepository.saveAll(newAlerts);
+        }
+        
+        // Batch save all product updates (single query)
+        if (!productsToUpdate.isEmpty()) {
+            productRepository.saveAll(productsToUpdate);
         }
     }
     
@@ -54,10 +105,16 @@ public class InventoryService {
      */
     @Transactional
     public LowStockAlert generateAlert(Product product) {
+        Integer threshold = product.getLowStockThreshold();
+        // Use default threshold of 5 if not set
+        if (threshold == null) {
+            threshold = 5;
+        }
+        
         LowStockAlert alert = new LowStockAlert(
             product,
             product.getStockQuantity(),
-            product.getLowStockThreshold()
+            threshold
         );
         return lowStockAlertRepository.save(alert);
     }
@@ -147,5 +204,13 @@ public class InventoryService {
             return productRepository.save(product);
         }
         throw new RuntimeException("Product not found with id: " + productId);
+    }
+    
+    /**
+     * Scheduled task to check low stock every hour
+     */
+    @org.springframework.scheduling.annotation.Scheduled(fixedRate = 3600000) // Run every hour (3600000 ms)
+    public void scheduledLowStockCheck() {
+        checkLowStock();
     }
 }

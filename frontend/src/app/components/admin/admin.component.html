@@ -69,7 +69,7 @@
         <!-- <button pButton icon="pi pi-plus" class="p-button-rounded p-button-primary"
           (click)="openCreateProductModal()"></button> -->
       </div>
-      <p-table [value]="products" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
+      <p-table #dt [value]="products" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
         [rowsPerPageOptions]="[5, 10, 20]" responsiveLayout="scroll"
         [globalFilterFields]="['name', 'brand', 'category']">
         <ng-template pTemplate="caption">
@@ -78,7 +78,7 @@
               (click)="openCreateProductModal()"></button>
             <span class="p-input-icon-left ml-auto">
               <i class="pi pi-search"></i>
-              <input pInputText type="text" (input)="dt.filterGlobal($event, 'contains')"
+              <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
                 placeholder="Search products..." />
             </span>
           </div>
@@ -224,7 +224,7 @@
         <h3>Discount List</h3>
 
       </div>
-      <p-table [value]="discounts" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
+      <p-table #dt2 [value]="discounts" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
         [rowsPerPageOptions]="[5, 10, 20]" responsiveLayout="scroll" [globalFilterFields]="['code', 'description']">
         <ng-template pTemplate="caption">
           <div class="flex align-items-center justify-content-between">
@@ -232,7 +232,7 @@
               (click)="openCreateDiscountModal()"></button>
             <span class="p-input-icon-left ml-auto">
               <i class="pi pi-search"></i>
-              <input pInputText type="text" (input)="dt2.filterGlobal($event, 'contains')"
+              <input pInputText type="text" (input)="dt2.filterGlobal($event.target.value, 'contains')"
                 placeholder="Search discounts..." />
             </span>
           </div>
