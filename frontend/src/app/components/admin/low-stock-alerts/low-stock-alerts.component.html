@@ -1,10 +1,15 @@
 <div class="alerts-container">
   <div class="alerts-header">
-    <h2>
-      <i class="bi bi-exclamation-triangle-fill"></i>
-      Low Stock Alerts
-    </h2>
-    <p class="subtitle">Monitor and manage products with low inventory levels</p>
+    <div>
+      <h2>
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        Low Stock Alerts
+      </h2>
+      <p class="subtitle">Monitor and manage products with low inventory levels</p>
+    </div>
+    <button class="btn btn-primary" (click)="refreshAlerts()" [disabled]="loading">
+      <i class="bi bi-arrow-clockwise"></i> Refresh Alerts
+    </button>
   </div>
 
   <!-- Loading State -->
@@ -51,7 +56,7 @@
         </div>
 
         <div class="alert-actions">
-          <button class="btn btn-resolve" (click)="resolveAlert(alert)">
+          <button class="btn btn-resolve" (click)="openResolveModal(alert)">
             <i class="bi bi-check-lg"></i> Mark as Resolved
           </button>
         </div>
@@ -61,6 +66,31 @@
         <span *ngIf="getStockStatus(alert) === 'out-of-stock'">OUT OF STOCK</span>
         <span *ngIf="getStockStatus(alert) === 'critical'">CRITICAL</span>
         <span *ngIf="getStockStatus(alert) === 'low'">LOW STOCK</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resolve Confirmation Modal -->
+  <div class="modal-overlay" *ngIf="showResolveModal" (click)="closeResolveModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <i class="bi bi-question-circle-fill"></i>
+        <h3>Confirm Resolution</h3>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to mark this alert as resolved?</p>
+        <div class="product-info-modal" *ngIf="alertToResolve">
+          <strong>{{ alertToResolve.product.name }}</strong>
+          <span class="text-muted">{{ alertToResolve.product.brand }}</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-cancel" (click)="closeResolveModal()">
+          <i class="bi bi-x-lg"></i> Cancel
+        </button>
+        <button class="btn btn-confirm" (click)="confirmResolveAlert()">
+          <i class="bi bi-check-lg"></i> Confirm
+        </button>
       </div>
     </div>
   </div>
