@@ -1,7 +1,9 @@
 package com.opticalshop.controller;
 
 import com.opticalshop.model.Advertisement;
+import com.opticalshop.model.PromoBannerSettings;
 import com.opticalshop.service.AdvertisementService;
+import com.opticalshop.service.PromoBannerSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,9 @@ public class AdvertisementController {
 
     @Autowired
     private AdvertisementService advertisementService;
+    
+    @Autowired
+    private PromoBannerSettingsService bannerSettingsService;
 
     @GetMapping("/advertisements")
     public ResponseEntity<List<Advertisement>> getAllActiveAdvertisements() {
@@ -35,5 +40,17 @@ public class AdvertisementController {
     public ResponseEntity<Void> deleteAdvertisement(@PathVariable Long id) {
         advertisementService.deleteAdvertisement(id);
         return ResponseEntity.ok().build();
+    }
+    
+    // Promotional Banner Settings Endpoints
+    
+    @GetMapping("/banner-settings")
+    public ResponseEntity<PromoBannerSettings> getBannerSettings() {
+        return ResponseEntity.ok(bannerSettingsService.getSettings());
+    }
+    
+    @PutMapping("/admin/banner-settings")
+    public ResponseEntity<PromoBannerSettings> updateBannerSettings(@RequestBody PromoBannerSettings settings) {
+        return ResponseEntity.ok(bannerSettingsService.updateSettings(settings));
     }
 }

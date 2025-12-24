@@ -1,0 +1,323 @@
+/* Modal Banner - Modern Design (Not Full Screen) */
+.modal-banner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  animation: slideIn 0.5s ease-out;
+  max-width: 900px;
+  width: 90%;
+}
+
+/* Banner Container */
+.banner-container {
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  color: white;
+}
+
+/* Close Section - Top Right */
+.close-section {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10;
+}
+
+/* Countdown Timer */
+.countdown-timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.timer-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Close Button (Shows after countdown) */
+.close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 20px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+/* Banner Content */
+.banner-content {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 30px;
+  align-items: center;
+}
+
+/* Icon Container */
+.icon-container {
+  font-size: 70px;
+  animation: bounce 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.icon-container i {
+  color: #fff;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* Text Content */
+.text-content {
+  flex: 1;
+}
+
+/* Announcement Title */
+.announcement-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  line-height: 1.3;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.announcement-title .highlight {
+  color: #ffd700;
+  font-size: 28px;
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Announcement Subtitle */
+.announcement-subtitle {
+  font-size: 15px;
+  margin: 0;
+  opacity: 0.95;
+  line-height: 1.5;
+}
+
+/* Features List */
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.features-list li {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.features-list i {
+  color: #4ade80;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Google Ads Container */
+.google-ads-container {
+  grid-column: 1 / -1;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+/* Ads Placeholder (Remove when implementing real ads) */
+.ads-placeholder {
+  text-align: center;
+  opacity: 0.7;
+}
+
+.ads-text {
+  font-size: 14px;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.ads-placeholder small {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    transform: translate(-50%, -60%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .banner-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .icon-container {
+    font-size: 60px;
+    margin: 0 auto;
+  }
+
+  .features-list {
+    align-items: center;
+  }
+
+  .features-list li {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-banner {
+    width: 95%;
+  }
+
+  .banner-container {
+    padding: 30px 20px;
+  }
+
+  .announcement-title {
+    font-size: 22px;
+  }
+
+  .announcement-title .highlight {
+    font-size: 24px;
+  }
+
+  .announcement-subtitle {
+    font-size: 14px;
+  }
+
+  .features-list {
+    font-size: 13px;
+  }
+
+  .icon-container {
+    font-size: 50px;
+  }
+
+  .google-ads-container {
+    min-height: 80px;
+    padding: 15px;
+  }
+
+  .timer-circle {
+    width: 45px;
+    height: 45px;
+  }
+
+  .timer-text {
+    font-size: 18px;
+  }
+
+  .close-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 576px) {
+  .banner-container {
+    padding: 25px 15px;
+  }
+
+  .announcement-title {
+    font-size: 20px;
+  }
+
+  .announcement-title .highlight {
+    font-size: 22px;
+  }
+
+  .features-list li {
+    font-size: 12px;
+  }
+}

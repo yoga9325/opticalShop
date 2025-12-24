@@ -11,6 +11,7 @@ import { LoaderComponent } from './components/loader/loader.component';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { FooterComponent } from './components/footer/footer.component';
+import { PromoModalComponent } from './components/promo-modal/promo-modal.component';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,8 @@ import { FooterComponent } from './components/footer/footer.component';
     AuthModalComponent,
     LoaderComponent,
     ToastModule,
-    FooterComponent
+    FooterComponent,
+    PromoModalComponent
   ],
   providers: [MessageService]
 })

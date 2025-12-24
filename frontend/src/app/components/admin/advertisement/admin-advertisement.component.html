@@ -1,42 +1,173 @@
 <div class="card">
     <h2>Manage Advertisements</h2>
-    <p-button label="Add Advertisement" icon="pi pi-plus" (click)="showDialog()"></p-button>
+    
+    <!-- Toast for notifications -->
+    <p-toast></p-toast>
+    
+    <!-- Confirm Dialog -->
+    <p-confirmDialog></p-confirmDialog>
 
-    <p-table [value]="advertisements" [tableStyle]="{'min-width': '50rem'}" class="mt-3">
-        <ng-template pTemplate="header">
-            <tr>
-                <th>ID</th>
-                <th>Image</th>
-                <th>Caption</th>
-                <th>Active</th>
-                <th>Actions</th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-ad>
-            <tr>
-                <td>{{ad.id}}</td>
-                <td><img [src]="ad.imageUrl" [alt]="ad.caption" width="100" /></td>
-                <td>{{ad.caption}}</td>
-                <td>{{ad.active}}</td>
-                <td>
-                    <p-button icon="pi pi-trash" styleClass="p-button-danger p-button-rounded"
-                        (click)="deleteAdvertisement(ad.id)"></p-button>
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
+    <!-- Tab View for Sections -->
+    <p-tabView>
+        <!-- Promotional Banner Tab -->
+        <p-tabPanel header="Promotional Banner" leftIcon="pi pi-megaphone">
+            <div class="banner-settings-section">
+                <p class="section-description">Configure the promotional banner that appears on the website</p>
 
-    <p-dialog header="Add Advertisement" [(visible)]="displayDialog" [style]="{width: '50vw'}">
-        <div class="flex flex-column gap-2">
-            <label htmlFor="imageUrl">Image URL</label>
-            <input pInputText id="imageUrl" [(ngModel)]="newAdvertisement.imageUrl" />
+                <div class="settings-grid">
+                    <!-- Enable/Disable Toggle -->
+                    <div class="form-field full-width">
+                        <label class="toggle-label">
+                            <span class="label-text">
+                                <i class="bi bi-power"></i> Enable Banner
+                            </span>
+                            <p-inputSwitch [(ngModel)]="bannerSettings.enabled"></p-inputSwitch>
+                        </label>
+                        <small class="field-hint">Toggle to show/hide the banner on the website</small>
+                    </div>
 
-            <label htmlFor="caption">Caption</label>
-            <input pInputText id="caption" [(ngModel)]="newAdvertisement.caption" />
-        </div>
-        <ng-template pTemplate="footer">
-            <p-button icon="pi pi-check" (click)="saveAdvertisement()" label="Save"
-                styleClass="p-button-text"></p-button>
-        </ng-template>
-    </p-dialog>
+                    <!-- Banner Title -->
+                    <div class="form-field full-width">
+                        <label for="bannerTitle">Banner Title</label>
+                        <input pInputText id="bannerTitle" [(ngModel)]="bannerSettings.title" 
+                               placeholder="Enter banner title" class="w-full" />
+                        <small class="field-hint">Main announcement text</small>
+                    </div>
+
+                    <!-- Banner Subtitle -->
+                    <div class="form-field full-width">
+                        <label for="bannerSubtitle">Banner Subtitle</label>
+                        <textarea pInputTextarea id="bannerSubtitle" [(ngModel)]="bannerSettings.subtitle" 
+                                  placeholder="Enter banner subtitle" rows="3" class="w-full"></textarea>
+                        <small class="field-hint">Description text below the title</small>
+                    </div>
+
+                    <!-- Countdown Duration -->
+                    <div class="form-field">
+                        <label for="countdownDuration">Countdown Duration (seconds)</label>
+                        <p-inputNumber 
+                            id="countdownDuration" 
+                            [(ngModel)]="bannerSettings.countdownDuration" 
+                            [min]="5" 
+                            [max]="60" 
+                            [showButtons]="true"
+                            buttonLayout="horizontal"
+                            incrementButtonIcon="pi pi-plus"
+                            decrementButtonIcon="pi pi-minus"
+                            inputStyleClass="countdown-input">
+                        </p-inputNumber>
+                        <small class="field-hint">Time before close button appears</small>
+                    </div>
+
+                    <!-- Banner Icon -->
+                    <div class="form-field">
+                        <label for="bannerIcon">Banner Icon</label>
+                        <select 
+                            id="bannerIcon" 
+                            [(ngModel)]="bannerSettings.icon" 
+                            class="icon-select">
+                            <option value="bi-phone-fill">📱 Mobile Phone</option>
+                            <option value="bi-gift-fill">🎁 Gift</option>
+                            <option value="bi-star-fill">⭐ Star</option>
+                            <option value="bi-heart-fill">❤️ Heart</option>
+                            <option value="bi-bell-fill">🔔 Bell</option>
+                            <option value="bi-cart-fill">🛒 Shopping Cart</option>
+                            <option value="bi-tag-fill">🏷️ Tag</option>
+                            <option value="bi-trophy-fill">🏆 Trophy</option>
+                            <option value="bi-lightning-fill">⚡ Lightning</option>
+                            <option value="bi-fire">🔥 Fire</option>
+                        </select>
+                        <small class="field-hint">Icon displayed on the banner</small>
+                    </div>
+
+                    <!-- Features List -->
+                    <div class="form-field full-width">
+                        <label>Features List</label>
+                        <div class="features-manager">
+                            <div class="feature-item" *ngFor="let feature of bannerSettings.features; let i = index">
+                                <span class="feature-text"><i class="bi bi-check-circle-fill"></i> {{ feature }}</span>
+                                <button 
+                                    pButton 
+                                    type="button" 
+                                    icon="pi pi-trash" 
+                                    class="p-button-rounded p-button-danger p-button-sm"
+                                    (click)="removeFeature(i)">
+                                </button>
+                            </div>
+                            
+                            <div class="add-feature-form">
+                                <input pInputText [(ngModel)]="newFeature" 
+                                       placeholder="Add new feature" 
+                                       (keyup.enter)="addFeature()"
+                                       class="flex-grow-1" />
+                                <button pButton type="button" icon="pi pi-plus" label="Add" 
+                                        (click)="addFeature()" 
+                                        [disabled]="!newFeature.trim()"
+                                        class="p-button-sm"></button>
+                            </div>
+                        </div>
+                        <small class="field-hint">Feature items displayed in the banner</small>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button pButton type="button" label="Save Settings" icon="pi pi-save" 
+                            (click)="saveBannerSettings()" 
+                            class="p-button-success"></button>
+                    <button pButton type="button" label="Reset to Defaults" icon="pi pi-refresh" 
+                            (click)="resetBannerSettings()" 
+                            class="p-button-secondary"></button>
+                    <button pButton type="button" label="Preview Banner" icon="pi pi-eye" 
+                            (click)="previewBanner()" 
+                            class="p-button-info"></button>
+                </div>
+            </div>
+        </p-tabPanel>
+
+        <!-- Image Advertisements Tab -->
+        <p-tabPanel header="Image Advertisements" leftIcon="pi pi-images">
+            <div class="image-ads-section">
+                <p-button label="Add Advertisement" icon="pi pi-plus" (click)="showDialog()" class="mb-3"></p-button>
+
+                <p-table [value]="advertisements" [tableStyle]="{'min-width': '50rem'}">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Caption</th>
+                            <th>Active</th>
+                            <th>Actions</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-ad>
+                        <tr>
+                            <td>{{ad.id}}</td>
+                            <td><img [src]="ad.imageUrl" [alt]="ad.caption" width="100" /></td>
+                            <td>{{ad.caption}}</td>
+                            <td>{{ad.active}}</td>
+                            <td>
+                                <p-button icon="pi pi-trash" styleClass="p-button-danger p-button-rounded"
+                                    (click)="deleteAdvertisement(ad.id)"></p-button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+                <p-dialog header="Add Advertisement" [(visible)]="displayDialog" [style]="{width: '50vw'}">
+                    <div class="flex flex-column gap-2">
+                        <label htmlFor="imageUrl">Image URL</label>
+                        <input pInputText id="imageUrl" [(ngModel)]="newAdvertisement.imageUrl" />
+
+                        <label htmlFor="caption">Caption</label>
+                        <input pInputText id="caption" [(ngModel)]="newAdvertisement.caption" />
+                    </div>
+                    <ng-template pTemplate="footer">
+                        <p-button icon="pi pi-check" (click)="saveAdvertisement()" label="Save"
+                            styleClass="p-button-text"></p-button>
+                    </ng-template>
+                </p-dialog>
+            </div>
+        </p-tabPanel>
+    </p-tabView>
 </div>

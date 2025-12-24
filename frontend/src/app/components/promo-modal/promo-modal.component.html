@@ -1,0 +1,52 @@
+<!-- Promotional Modal Banner -->
+<div class="modal-banner" *ngIf="isVisible">
+  <div class="banner-container">
+    <!-- Countdown Timer / Close Button -->
+    <div class="close-section">
+      <!-- Show countdown timer while counting down -->
+      <div class="countdown-timer" *ngIf="!showCloseButton">
+        <div class="timer-circle">
+          <span class="timer-text">{{ countdown }}</span>
+        </div>
+      </div>
+      
+      <!-- Show close button after countdown finishes -->
+      <button class="close-btn" *ngIf="showCloseButton" (click)="closeModal()" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Banner Content -->
+    <div class="banner-content">
+      <!-- Dynamic Icon -->
+      <div class="icon-container">
+        <i class="bi" [ngClass]="settings.icon"></i>
+      </div>
+
+      <!-- Main Announcement -->
+      <div class="text-content">
+        <h2 class="announcement-title">
+          {{ settings.title }} <span class="highlight">Coming Soon!</span>
+        </h2>
+        <p class="announcement-subtitle">
+          {{ settings.subtitle }}
+        </p>
+      </div>
+
+      <!-- Features List -->
+      <ul class="features-list">
+        <li *ngFor="let feature of settings.features">
+          <i class="bi bi-check-circle-fill"></i> {{ feature }}
+        </li>
+      </ul>
+
+      <!-- Google Ads Section -->
+      <div class="google-ads-container">
+        <div class="ads-placeholder">
+          <p class="ads-text">Advertisement Space</p>
+          <small>Google Ads will appear here</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
